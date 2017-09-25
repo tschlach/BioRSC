@@ -44,14 +44,6 @@ class Window(object):
         self.slope = self.drop/self.length
         return
 
-    def curviness(self): 
-
-    def suitability(self):
-        curves = self.curviness()
-        slope = self.slope()
-        drop = self.drop()
-        return 
-
 curve = Centerline(crv)
 
 window = Window(curve.curve, window_start, curve.points, window_width)
