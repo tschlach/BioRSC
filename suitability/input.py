@@ -1,16 +1,20 @@
 """
-Assesses designer input points - draws potential riffles and outputs their 
+Asigns designer input points
+Dependencies:
+	-window.py (need to imort window.py eventually)
 """
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
 
 curve = Centerline(crv)
 
-points = #user input points
+user_points = #user input points
 
+windows = [] #a list of the window objects that will be output.
 
-for i in points:
-	j = #get the actual closest point on the curve to the user input point - just in case there isn't snapping etc...
-	window = Window(i, curve.curve, curve.points, window_width) #replace i with j if necessary...
-	window.draw_riffle() ##this function needs to return the drawn riffle geometry...
-	window.suitability() ##this will raise any red-flags on the suitability of drawing a riffle at that location
+##This just appends each of the window points to a large array - and draws the array. Doesn't actually give any control of the windows themselves
+for i in user_points: ##'window start' will be an actual point - not an index...need to find a way to check for this...
+    window = Window(curve.curve, i, curve.points, 40) ## 40 means 20 ft riffle test.
+    window.generate()
+    for i in window.window_pts:
+        windows.append(rg.Point3d(i))
