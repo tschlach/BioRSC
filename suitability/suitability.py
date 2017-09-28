@@ -1,7 +1,8 @@
 """
+Author: Biohabitats Inc.
+Updated: September 28, 2017
+
 This script takes class definitions (window and centerline) and adds the functional components that make the thing actually run in a grasshopper script...
-	Needs:
-		-A subfolder in the BioRSC repository, with a screenshot of a grasshopper layout that makes the script functional... 
 """
 
 import rhinoscriptsyntax as rs

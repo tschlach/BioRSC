@@ -1,6 +1,14 @@
 """
-Defines the centerline class - which should have methods that can describe the given curve
- -Needs to take care of the references to points on line - that includes lenght, t, and points
+Author: Biohabitats Inc.
+Updated: September 28, 2017
+
+Defines the centerline class, the attributes of which can be used to inform the window class when making a suitability assessment
+
+Inputs
+	curve: a single Rhino curve
+
+Tasks:
+
 """
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
@@ -14,12 +22,14 @@ class Centerline(object):
 		self.segments = self.length * 2
 		self.points = rs.DivideCurve(curve, self.segments)
 		self.parameters = []
+        self.p_range = 0
         self.slopes = []
 		self.curve = curve
 		
 	def getParameters(self):
 	    for i in self.points:
 	        self.parameters.append(rs.CurveClosestPoint(self.curve, i))
+	    self.p_range = abs(self.parameters[0] - self.parameters[-1])
 	    return
 
     #getSlopes defines the *discrete* slopes of the line, based on the straight distance between points on the line

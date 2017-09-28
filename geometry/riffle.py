@@ -1,5 +1,16 @@
 """
+Author: Biohabitats Inc.
+Updated: September 28, 2017
+
 Defines the riffle class
+
+Tasks:
+	-draw_riffle method:
+		1. window start and ends
+		2. depth in the z-vector
+		3. draw 2 points of distance width/2 from the centerline, perpendicular to the centerline
+		4. draw an arc between the 3 points
+
 """
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg

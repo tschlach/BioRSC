@@ -1,7 +1,14 @@
 """
+Author: Biohabitats Inc.
+Updated: September 28, 2017
+
 Asigns designer input points
+
 Dependencies:
-	-window.py (need to imort window.py eventually)
+	-window.py (need to import window.py eventually)
+
+Tasks:
+
 """
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
