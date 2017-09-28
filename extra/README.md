@@ -1,12 +1,11 @@
 # Extras
 
-##Tutorial
+## Tutorial
 
 Here you can find an overview of how to get the BioRSC tool working
 
 We can include things such as this image:
 
-Inline-style: 
 ![alt text](https://github.com/tschlach/BioRSC/blob/master/extra/user_input.JPG "this is the image!")
 
 

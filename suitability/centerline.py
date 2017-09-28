@@ -8,6 +8,7 @@ Inputs
 	curve: a single Rhino curve
 
 Tasks:
+	-should the window class inherent Centerline attributes
 
 """
 import rhinoscriptsyntax as rs
