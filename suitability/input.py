@@ -1,6 +1,6 @@
 """
 Author: Biohabitats Inc.
-Updated: September 28, 2017
+Updated: September 29, 2017
 
 Asigns a suitability window to designer input points
 
@@ -40,3 +40,7 @@ for i in user_points: ##'window start' will be an actual point - not an index...
         windows.append(rg.Point3d(i))
     text.append('window ' + str(count))
     #windows.append(window.window_pts)
+
+##if the window should draw a riffle...riffle(window) - this needs to be a non-local variable
+##
+##

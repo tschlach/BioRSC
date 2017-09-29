@@ -3,7 +3,6 @@ Author: Biohabitats Inc.
 Updated: September 28, 2017
 
 This file defines the 'window' class - which will be used to make assessments of suitability for riffles along a centerline curve
-The script should be pasted into a Python component in Grasshopper
 
 Inputs
     curve: the curve attribute of a centerline class (ie. Centerline.curve, redundant)
@@ -12,6 +11,7 @@ Inputs
     span: the number of points along the line to include in the window - under current (Sep2017) Centerline class definition, points are spaced .5ft apart. As such, a span of 40 = 20ft window
 
 Tasks:
+    -commit to library to make the window class importable
 
 """
 import rhinoscriptsyntax as rs

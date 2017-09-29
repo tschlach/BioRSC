@@ -1,6 +1,6 @@
 """
 Author: Biohabitats Inc.
-Updated: September 28, 2017
+Updated: September 29, 2017
 
 Defines the riffle class
 
@@ -15,10 +15,10 @@ Tasks:
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
 
-class Riffle(object):
+class Riffle(window):
     """  
 	"""
-	def __init__(self, centerline, start, drop, run, width, depth):
+	def __init__(self, centerline, width, depth):
 		self.curve = centerline #user input centerline of the stream
 		self.start = start
 		self.drop = drop
@@ -27,6 +27,12 @@ class Riffle(object):
 		self.depth = depth
 
 	def draw_riffle(self):
+		left_pt =
+		right_pt =
+		center_pt =
+		window_curve = 
+		arc = rs.AddArc3pt(left_pt, right_pt, center_pt) #take start point, riffle depth and riffle width
+		riffle = rs.AddSweep1(window_curve, arc)
 		return riffle
 		###This function should replicate the grasshopper components that 'draw' the riffles
 		
