@@ -1,10 +1,10 @@
 """
 Author: Biohabitats Inc.
-Updated: September 28, 2017
+Updated: October 9, 2017
 
 This file defines the 'window' class - which will be used to make assessments of suitability for riffles along a centerline curve
 
-Inputs
+Inputs:
     curve: the curve attribute of a centerline class (ie. Centerline.curve, redundant)
     start: a grasshopper 3d Point location, ideally set by user input
     curve_pts: the points attribute of a centerline class (ie. Centerline.points)
@@ -31,21 +31,39 @@ class Window(object):
         self.length = span/2
         self.p_range = 0
         self.p_ratio = 0 ##a relative way of assessing the 'curviness' of a window
-    
-#generates a list of points that is the window
-    def generate(self):
+
+#a function that tests whether or not a given window start location attempts to generate a window that 'goes beyond' the length of the centerline
+    def span_test(self): 
         window = []
         for i in range(self.span):
-            window.append(self.curve_pts[self.start_index+i])
+            try:
+                window.append(self.curve_pts[self.start_index+i])                
+            except Exception:
+                print("Window is out of range for length " + str(self.length) + " feet.")
+                return window
+        return window
+
+#generates a list of points that is the window - this is beginning to look like a second __init__ function...
+    def generate(self, window):
+        self.span = len(window)
+        self.length = self.span/2
         self.window_pts = window
         self.end_pt = window[-1]
         self.drop = self.start_pt[2] - self.end_pt[2]
         self.slope = self.drop/self.length
         return
 
+#constructs the p_range and p_ratio attributes of the window
     def getParameters(self):
         for i in self.window_pts:
             self.parameters.append(rs.CurveClosestPoint(self.curve, i))
         self.p_range = abs(self.parameters[0] - self.parameters[-1])
         self.p_ratio = self.p_range/self.length
         return
+
+
+### Run the following code to create a complete window instance
+###
+# window = Window(curve, start_point, points_on_curve, 30)
+# window.generate(window.span_test)
+# window.getParameters() 

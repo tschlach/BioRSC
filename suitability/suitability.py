@@ -1,15 +1,13 @@
 """
 Author: Biohabitats Inc.
-Updated: September 28, 2017
+Updated: October 9, 2017
 
 This script takes class definitions (window and centerline) and adds the functional components (including the input.py script) that make the thing actually run in a grasshopper script...
 
 Tasks:
     -weighting mechanism
     -testing windows of different length for suitability
-    -create libraries from centerline and window - import those files
-
-
+    -create libraries from centerline and window -  def __init__():
 """
 
 import rhinoscriptsyntax as rs
@@ -64,7 +62,7 @@ class Window(object):
         self.p_range = 0
         self.p_ratio = 0 ##a relative way of assessing the 'curviness' of a window
     
-#generates a list of points that is the window
+    #generates a list of points that is the window
     def generate(self):
         window = []
         for i in range(self.span):

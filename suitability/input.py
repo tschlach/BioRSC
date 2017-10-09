@@ -1,8 +1,8 @@
 """
 Author: Biohabitats Inc.
-Updated: September 29, 2017
+Updated: October 9, 2017
 
-Asigns a suitability window to designer input points
+Asigns a suitability window to designer input points - outputs information about the associated attributes of the window
 
 Dependencies:
 	-centerline.py
@@ -11,15 +11,20 @@ Dependencies:
 Tasks:
 	-more robust reporting mechanism
 	-need to clairify the role of 'input' vs. 'suitability' files
+    -import window from suitability...
+    -write window_from_points function
 
 """
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
+import suitability
+
+user_points = #grasshopper component with several user defined points - could consider using rs.GetObeject??
 
 curve = Centerline(crv)
+curve.getParameters()
 
-user_points = #user input points an input to the python component
-
+###Variables to display
 windows = [] #a list of the window objects that will be output.
 count = 0
 text = []
@@ -41,6 +46,6 @@ for i in user_points: ##'window start' will be an actual point - not an index...
     text.append('window ' + str(count))
     #windows.append(window.window_pts)
 
-##if the window should draw a riffle...riffle(window) - this needs to be a non-local variable
-##
-##
+
+def windows_from_points(points, riffle_span): #should we write out this function??
+

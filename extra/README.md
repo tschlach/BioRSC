@@ -2,13 +2,26 @@
 
 ## Tutorial
 
-Here you can find an overview of how to get the BioRSC tool working
+Here you can find an overview of the BioRSC tool and a guide to get it working.
+
+The BioRSc currently evaluates a centerline curve for 
 
 We can include things such as this image:
 
 ![alt text](https://github.com/tschlach/BioRSC/blob/master/extra/user_input.JPG "this is the image!")
 
+## Suitability
 
-That image is a look at how one might set up the grasshopper document that will produce a suitability window.
+### Assessing an Entire Centerline:
 
-One day - we will need to make a tutorial like this. This will help everyone be able to use the BioRSC.
+#### User Defined Input Parameters:
+Curve:
+
+### Window Assessment for Sections of a Centerline
+
+#### User Defined Input Parameters:
+Curve:
+
+## Geometry
+
+Once a line is assessed for suitability, the designer can choose locations for drawing riffle/pool structures
