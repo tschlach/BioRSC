@@ -1,6 +1,6 @@
 """
 Author: Biohabitats Inc.
-Updated: September 29, 2017
+Updated: October 9, 2017
 
 Defines the riffle class
 
@@ -16,7 +16,7 @@ import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
 
 class Riffle(window):
-    """  
+    """ 
 	"""
 	def __init__(self, centerline, width, depth):
 		self.curve = centerline #user input centerline of the stream
