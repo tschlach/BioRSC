@@ -65,5 +65,5 @@ class Window(object):
 ### Run the following code to create a complete window instance
 ###
 # window = Window(curve, start_point, points_on_curve, 30)
-# window.generate(window.span_test)
+# window.generate(window.span_test())
 # window.getParameters() 

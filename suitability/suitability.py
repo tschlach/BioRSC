@@ -61,18 +61,29 @@ class Window(object):
         self.length = span/2
         self.p_range = 0
         self.p_ratio = 0 ##a relative way of assessing the 'curviness' of a window
-    
-    #generates a list of points that is the window
-    def generate(self):
+
+#a function that tests whether or not a given window start location attempts to generate a window that 'goes beyond' the length of the centerline
+    def span_test(self): 
         window = []
         for i in range(self.span):
-            window.append(self.curve_pts[self.start_index+i])
+            try:
+                window.append(self.curve_pts[self.start_index+i])                
+            except Exception:
+                print("Window is out of range for length " + str(self.length) + " feet.")
+                return window
+        return window
+
+#generates a list of points that is the window - this is beginning to look like a second __init__ function...
+    def generate(self, window):
+        self.span = len(window)
+        self.length = self.span/2
         self.window_pts = window
         self.end_pt = window[-1]
         self.drop = self.start_pt[2] - self.end_pt[2]
         self.slope = self.drop/self.length
         return
 
+#constructs the p_range and p_ratio attributes of the window
     def getParameters(self):
         for i in self.window_pts:
             self.parameters.append(rs.CurveClosestPoint(self.curve, i))
@@ -90,4 +101,4 @@ tops = []
 
 window = Window(curve.curve, window_start, curve.points, window_width)
 
-window.generate()
+window.generate(window.span_test())
