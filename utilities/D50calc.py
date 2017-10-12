@@ -1,3 +1,15 @@
+"""
+Author: Biohabitats Inc.
+Updated: October 12, 2017
+
+D50 functions - used for determining stone sizing 
+
+Inputs:
+
+Tasks:
+
+"""
+
 # D50 is the stone size for 50% passing
 import math
 import rhinoscriptsyntax as rs
