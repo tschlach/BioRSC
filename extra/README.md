@@ -8,7 +8,7 @@ The BioRSc currently evaluates a centerline curve for
 
 We can include things such as this image:
 
-![alt text](https://github.com/tschlach/BioRSC/blob/master/extra/user_input.JPG "this is the image!")
+![alt text](https://github.com/tschlach/BioRSC/blob/master/extra/grasshopper_setup.JPG "this is the image!")
 
 ## Suitability
 

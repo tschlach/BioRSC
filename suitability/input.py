@@ -1,12 +1,13 @@
 """
 Author: Biohabitats Inc.
-Updated: October 9, 2017
+Updated: October 24, 2017
 
 Asigns a suitability window to designer input points - outputs information about the associated attributes of the window
 
 Dependencies:
-	-centerline.py
-	-window.py (need to import window.py eventually)
+	-Centerline and Window Classes
+    -Rhino.Geometry as rg
+    -rhinoscriptsyntax as rs
 
 Tasks:
 	-more robust reporting mechanism

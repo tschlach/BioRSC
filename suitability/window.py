@@ -15,7 +15,6 @@ Tasks:
 
 """
 import rhinoscriptsyntax as rs
-import Rhino.Geometry as rg
 
 ##Creates the Window class with a wide array of descriptive attributes - for 
 class Window(object):

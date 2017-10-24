@@ -17,17 +17,17 @@ import math
 
 class Centerline(object):
     def __init__(self, curve):
-    self.length = rs.CurveLength(curve)
-    self.start = rs.CurveStartPoint(curve)
-    self.end = rs.CurveEndPoint(curve)
-    self.drop = self.start[2] - self.end[2]
-    self.segments = self.length * 2 ##defines the number of segments for the self.points definition - here each segment is .5ft
-    self.points = rs.DivideCurve(curve, self.segments)
-    self.parameters = []
-    self.p_range = 0
-    self.p_ratios = [None, ] ##first point on the line has no p_ratio
-    self.slopes = []
-    self.curve = curve
+        self.length = rs.CurveLength(curve)
+        self.start = rs.CurveStartPoint(curve)
+        self.end = rs.CurveEndPoint(curve)
+        self.drop = self.start[2] - self.end[2]
+        self.segments = self.length * 2 ##defines the number of segments for the self.points definition - here each segment is .5ft
+        self.points = rs.DivideCurve(curve, self.segments)
+        self.parameters = []
+        self.p_range = 0
+        self.p_ratios = [None, ] ##first point on the line has no p_ratio
+        self.slopes = []
+        self.curve = curve
     
     def getParameters(self):
         for i in self.points:
@@ -36,11 +36,10 @@ class Centerline(object):
         return
 
     def getPRatios(self): ## the 'local' p-ratio is 
-    for i in range(1, len(self.parameters)-1):
-    r = abs(self.parameters[i+1] - self.parameters[i-1])
-    self.p_ratios.append(r) ##current p-ratio is r/span_of_local; span_of_local = 1
-    p_ratios.append(None)
-
+        for i in range(1, len(self.parameters)-1):
+            r = abs(self.parameters[i+1] - self.parameters[i-1])
+            self.p_ratios.append(r) ##current p-ratio is r/span_of_local; span_of_local = 1
+        self.p_ratios.append(None) ##the first and last index have a p_patio of none - because p ratios are a difference between
 
     #getSlopes defines the *discrete* slopes of the line, based on the straight distance between points on the line
     def getSlopes(self):
