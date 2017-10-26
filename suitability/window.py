@@ -50,6 +50,8 @@ class Window(object):
         self.end_pt = window[-1]
         self.drop = self.start_pt[2] - self.end_pt[2]
         self.slope = self.drop/self.length
+        self.start_height = self.start_pt[2]
+        self.end_height = self.end_pt[2]
         return
 
 #constructs the p_range and p_ratio attributes of the window

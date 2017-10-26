@@ -9,7 +9,6 @@ Inputs
 
 Tasks:
     -should the window class inherent Centerline attributes?
-
 """
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
