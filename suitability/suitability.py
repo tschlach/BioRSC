@@ -54,14 +54,14 @@ def suitability(windows):
             if value['drop'] < 0.25:
                 windows3.append(int(value['index']))
     windows3.sort()
+    
     #distance from other potential riffle starts
     for i in windows3:
         good_win = True
         for q in range (i - 50, i):
             if q in windows4:
                 good_win = False
-        if good_win == True:
+        if good_win:
             windows4.append(i)
     
     return windows4
-
