@@ -1,24 +1,22 @@
 """
 Author: Biohabitats Inc.
-Updated: October 26, 2017
+Updated: October 27, 2017
 
 This script takes a centerline curve and returns the idealized riffle start locations, as determined by the 'suitability analysis'
 
 Dependencies:
-    -BioRSC Window class
+    -BioRSC Window and Curve class
 
 Tasks:
-    -the suitability file should take a centerline class and return idealized points for placing riffles (or points - or riffle/points)
-    -weighting mechanism
     -testing windows of different length for suitability
-    -
+    -returning riffle and pool suitability (currently only returns riffle tops)
 """
 
 ######
 def create_window_dict(curve):
     windows = {}
 
-    counts = ["%03d" % x for x in range(len(curve.points))] 
+    counts = ["%04d" % x for x in range(len(curve.points))] ##number of digits should reflect the number of segements/windows/assessment points on a line... 
 
     count = 0
     for i in curve.points:
@@ -44,17 +42,26 @@ def create_window_dict(curve):
 def suitability(windows):
     windows2 = []
     windows3 = []
-
+    windows4 = []
+    
     #p-ratio
     for key,value in windows.items():
-        if value[4] < 1:
+        if value['p_ratio'] < 1:
             windows2.append(key)
     #drop
     for key, value in windows.items():
         if key in windows2:
-            if value[3] < -0.25:
-                windows3.append(key)
+            if value['drop'] < 0.25:
+                windows3.append(int(value['index']))
+    windows3.sort()
+    #distance from other potential riffle starts
+    for i in windows3:
+        good_win = True
+        for q in range (i - 50, i):
+            if q in windows4:
+                good_win = False
+        if good_win == True:
+            windows4.append(i)
+    
+    return windows4
 
-    return windows3
-
-##windows 3 is simply a list of windows that meet the criteria outlined in the above 'if' loops
