@@ -4,14 +4,14 @@ Updated: October 9, 2017
 
 Defines the centerline class, the attributes of which can be used to inform the window class when making a suitability assessment
 
+Dependencies: rhinoscriptsyntax as rs, Rhino.Geometry as rg, math
+
 Inputs
     curve: a single Rhino curve
 
 Tasks:
     -should the window class inherent Centerline attributes?
 """
-import rhinoscriptsyntax as rs
-import Rhino.Geometry as rg
 import math
 
 class Centerline(object):

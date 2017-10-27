@@ -4,6 +4,8 @@ Updated: October 9, 2017
 
 Defines the riffle class
 
+Dependencies: rhinoscriptsyntax as rs, Rhino.Geometry as rg
+
 Tasks:
 	-draw_riffle method:
 		1. window start and ends
@@ -12,10 +14,7 @@ Tasks:
 		4. draw an arc between the 3 points
 
 """
-import rhinoscriptsyntax as rs
-import Rhino.Geometry as rg
-
-class Riffle(window):
+class Riffle(Window):
     """ 
 	"""
 	def __init__(self, centerline, width, depth):

@@ -13,10 +13,6 @@ Tasks:
     -should be tied in with a iterative suitability analysis
 
 """
-import rhinoscriptsyntax as rs
-import Rhino.Geometry as rg
-import suitability
-
 curve = Centerline(crv)
 curve.getParameters()
 

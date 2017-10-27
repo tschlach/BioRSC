@@ -89,3 +89,44 @@ class Window(object):
         self.p_range = abs(self.parameters[0] - self.parameters[-1])
         self.p_ratio = self.p_range/self.length
         return
+
+def windows_from_points(curve, user_points, riffle_span):
+    tops    = []
+    text    = []
+    count   = 0
+    windows = []
+
+    for i in user_points:
+        count += 1
+        window = Window(curve.curve, i, curve.points, riffle_span)
+        window.generate()
+        window.getParameters()
+        tops.append(window.parameters[0])
+        print('Window ' + str(count) + ' p-ratio: '+ str(window.p_ratio))
+        print('Window ' + str(count) + ' drop: '+ str(window.drop))
+        print('Window ' + str(count) + ' slope: '+ str(window.slope))
+        print('\n')
+        for i in window.window_pts:
+            windows.append(rg.Point3d(i))
+        text.append('window ' + str(count))
+
+    return windows
+
+def Riffle_Creation(f_tor, f_bor, thals, Rw, Rd):
+    #f_tor - hframe top of riffle, f_bor - hframe bottom of riffle, thals - thalweg start, Rw - riffle width, Rd - riffle depth
+    Rwpos = (float(Rw) * .5)
+    Rwneg = gc.Negative(Rwpos)
+    thals = rs.coerce3dpoint(thals)
+    #top arc creation
+    pt_top1 = gc.PointOriented(f_tor, u, Rwpos, Rd)
+    pt_top2 = gc.PointOriented(f_tor, u, Rwneg, Rd)
+    arc_top = gc.Arc3Pt(pt_top1, thals, pt_top2).arc
+    #bottom arc creation
+    pt_bot1 = gc.PointOriented(f_bor, u, Rwpos, Rd)
+    pt_bot2 = gc.PointOriented(f_bor, u, Rwneg, Rd)
+    pt_bot3 = gc.PointOriented(f_bor, u, v)
+    arc_bot = gc.Arc3Pt(pt_bot1, pt_bot3, pt_bot2).arc
+    #loft riffle creation
+    rif_loft = gc.Loft([arc_top, arc_bot])
+    Loft.append(rif_loft)
+    return

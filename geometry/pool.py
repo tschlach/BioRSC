@@ -9,9 +9,6 @@ Inputs
 Tasks:
 
 """
-import rhinoscriptsyntax as rs
-import Rhino.Geometry as rg
-
 class Pool(object):
 	def __init__():
 

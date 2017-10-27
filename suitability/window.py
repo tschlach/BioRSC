@@ -4,6 +4,8 @@ Updated: October 9, 2017
 
 This file defines the 'window' class - which will be used to make assessments of suitability for riffles along a centerline curve
 
+Dependencies: rhinoscriptsyntax as rs
+
 Inputs:
     curve: the curve attribute of a centerline class (ie. Centerline.curve, redundant)
     start: a grasshopper 3d Point location, ideally set by user input
@@ -14,8 +16,6 @@ Tasks:
     -commit to library to make the window class importable
 
 """
-import rhinoscriptsyntax as rs
-
 ##Creates the Window class with a wide array of descriptive attributes - for 
 class Window(object):
     def __init__(self, curve, start, curve_pts, span):
@@ -30,6 +30,7 @@ class Window(object):
         self.length = span/2
         self.p_range = 0
         self.p_ratio = 0 ##a relative way of assessing the 'curviness' of a window
+        self.geom = None
 
 #a function that tests whether or not a given window start location attempts to generate a window that 'goes beyond' the length of the centerline
     def span_test(self): 
@@ -62,6 +63,13 @@ class Window(object):
         self.p_ratio = self.p_range/self.length
         return
 
+    def riffle_creation():
+
+
+class Riffle(Window):
+    def __init__(width, depth):
+        self.wi = width
+        self.width
 
 ### Run the following code to create a complete window instance
 ###

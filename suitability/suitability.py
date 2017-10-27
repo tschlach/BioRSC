@@ -15,7 +15,6 @@ Tasks:
 """
 
 ######
-
 def create_window_dict(curve):
     windows = {}
 
