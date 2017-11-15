@@ -31,8 +31,8 @@ class Centerline(object):
         
         #get existing conditions values
         #?????Should we do this after the getIdealRiffleDesign so that we can vary the window
-        #?????based on the ideal riffle length?
-        self.getSlopes(2,10)
+        #?????based on the ideal riffle length? Answer: No. Ideal Riffle Design Requires Valley Slope.
+        self.getSlopes(2,10)                #(,X) X is important and factors into variances alot. Need to not hard code in.
         self.getIdealRiffleDesign(.5, 10)
         self.getBendRatios(5)
         self.getBendRatios2(5)
@@ -60,12 +60,16 @@ class Centerline(object):
         
     def getIdealRiffleDesign(self, riffle_drop_max, riffle_length_max): ##need an additional variable - that is able to be reset
         for i in self.riffles[0:160]:
-            pool_length = abs((riffle_drop_max * i.valley_slope) - riffle_length_max)
+            if i.valley_slope == 0: 
+                pool_length = 10000
+            else:  
+                pool_length = abs((riffle_drop_max / i.valley_slope) - riffle_length_max)
             check = False
             count = 0
             riffle_drop_test = riffle_drop_max
             riffle_length_test = riffle_length_max
-            while check == False and count < 10:
+            while check == False and count < 35:
+                print('STA=', i.station, '; Valley Slope=', i.valley_slope, '; PL=', pool_length, '; rLt=', riffle_length_test, '; rDt=', riffle_drop_test)
                 if pool_length >= riffle_length_test:
                     i.riffle_length = riffle_length_test
                     i.riffle_drop = riffle_drop_test
@@ -77,7 +81,8 @@ class Centerline(object):
                         riffle_length_test += 5
                         count +=1
                     elif riffle_drop_test < 2:
-                        riffle_drop_test += 5
+                        riffle_length_test = riffle_length_max
+                        riffle_drop_test += 0.25
                         count +=1
                     else:
                         i.geometry = "Neither"

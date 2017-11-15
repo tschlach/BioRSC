@@ -62,6 +62,7 @@ def maxList(l, v):
             max_val = l[i][v]
             max_idx = l[i][0]
             num = i
+            print(max_val)
     return max_idx, max_val, num
 
 def minList(l, v):
@@ -131,7 +132,7 @@ def place_Riffles(centerline):
     #Loop Through values (while?)
     #Get Max Value (just bend for now, later to be a weighted value)
     index1, value, i = maxList(TierR1, 2)
-        #index = index in Riffles
+        #index1 = index in Riffles
         #i = index in TierR1
 
     #Append to final List
@@ -140,13 +141,7 @@ def place_Riffles(centerline):
     #get riffle/pool length
     rCurrent = centerline.riffles[index1]
     rSTA = rCurrent.station
-    print("index = ", index1)
-    print("Station = ", rCurrent.station)
-    print("Invert Elev = ", rCurrent.pt.Z)
-    print("Riffle Drop = ", rCurrent.riffle_drop)
-    print("Riffle Length = ", rCurrent.riffle_length)
-    print("Radius of Curvature = ", value)
-    # print(listFinal)
+    print_RiffleInfo(rCurrent, index1)
 
     #delete from Tier
     TierR1.remove(TierR1[i])
@@ -156,13 +151,14 @@ def place_Riffles(centerline):
     #++++++++++++++++++++++++++++++++++++++++++++++
     #assume pool length = riffle length
     #this will need to be adjusted later more intelligently
-    targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
-    targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
 
     #Loop Through
     #Look downstream at next value distance down of riffle and pool length from last
     #find station nearest to end of US riffle
     print("Looking Downstream")
+
+    targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
+    targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
     t = i
     
     removeLowerLimit = rSTA
@@ -179,13 +175,7 @@ def place_Riffles(centerline):
             targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
             targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
             removeUpperLimit = targetSTA
-            print("----------")
-            print("index = ", index2)
-            print("Station = ", rCurrent.station)
-            print("Invert Elev = ", rCurrent.pt.Z)
-            print("Riffle Drop = ", rCurrent.riffle_drop)
-            print("Riffle Length = ", rCurrent.riffle_length)
-            print("Radius of Curvature = ", value)
+            print_RiffleInfo(rCurrent, index2)
         else:
             t = len(TierR1)
 
@@ -194,11 +184,13 @@ def place_Riffles(centerline):
     delete_Riffles(removeLowerLimit, removeUpperLimit)
 
     #Loop Through
-    #Look upstream at next value distance down of riffle and pool length from last
-    #If yes
+    '''
+    Look upstream at next value distance down of riffle and pool length from last
+    If yes
         #add to final list
         #delete from tier
-    #if no, set up loop to look in either direction by a specific amount
+    if no, set up loop to look in either direction by a specific amount
+    '''
 
     #Reset i to original value from first Riffle
     #get riffle/pool length of first riffle
@@ -218,13 +210,7 @@ def place_Riffles(centerline):
             rCurrent = centerline.riffles[index2]
             targetSTA = rCurrent.station 
             targetElev = rCurrent.pt.Z 
-            print("----------")
-            print("index = ", index2)
-            print("Station = ", rCurrent.station)
-            print("Invert Elev = ", rCurrent.pt.Z)
-            print("Riffle Drop = ", rCurrent.riffle_drop)
-            print("Riffle Length = ", rCurrent.riffle_length)
-            print("Radius of Curvature = ", value)
+            print_RiffleInfo(rCurrent, index2)
         else:
             t = 0    
     # print(listFinal)
@@ -236,47 +222,70 @@ def place_Riffles(centerline):
     #print(TierR1)
     print("----------")
 
-
-    # sortArray = []
-        
-    # for i in Tier1:
-    #     sortArray.append(int(i.station))
-    #     good_win = True
-    #     for q in range(int(i.station - 25), int(i.station)):
-    #         if q in sortArray:
-    #             good_win = False
-    #     if good_win == True:
-    #         Tier2.append(i)
-
-    # return Tier2
-
     return listFinal
+
+
+def print_RiffleInfo(l, i):
+    print("----------")
+    print("index = ", i)
+    print("Station = ", l.station)
+    print("Invert Elev = ", l.pt.Z)
+    print("Riffle Drop = ", l.riffle_drop)
+    print("Riffle Length = ", l.riffle_length)
+    print("Radius of Curvature = ", l.bend_ratio2)
+    return
 
 def delete_Riffles(iLower, iUpper):
     #iLower, iUpper are Stations within Tier classes
 
     print("----------")
     print("Delete Riffles")
+    print("Total Count=", len(listVariables), 'Final Station=', listVariables[-1][1])
     print('R1 Count=', len(TierR1))
 
-    for i in TierR1:
-        print(i[1])
-        if iLower <= i[1] <= iUpper:
-            print('Delete:',i[1], i[0], i)
-            TierR1.remove(i)                #Does this skip any values? Yes its skipping
-            print(i[1])
+    #Tried to make a separate function but it didn't work. Should come back to it.
+    i=0
+    while i < len(TierR1):
+        print("----------")
+        print(len(TierR1))
+        print('i=', i)
+        print(TierR1[i][1])
+        if iLower <= TierR1[i][1] < iUpper:
+            print('Delete:',TierR1[i][1], TierR1[i][0], TierR1[i])
+            TierR1.remove(TierR1[i])                #
+            print(len(TierR1))
+            print('i=', i)
+        else:
+            i += 1
 
-    print('Length R2=', len(TierR2)) 
-    for i in TierR2:
-        if iLower <= i[1] <= iUpper:
-            TierR2.remove(TierR2[i])                #Does this skip any values?
-    print('Length R3=', len(TierR3))
-    for i in TierR3:
-        if iLower <= i[1] <= iUpper:
-            TierR3.remove(TierR3[i])                #Does this skip any values?
+    i = 0
+    while i < len(TierR2):
+        print("----------")
+        print(len(TierR2))
+        print('i=', i)
+        print(TierR2[i][1])
+        if iLower <= TierR2[i][1] < iUpper:
+            print('Delete:',TierR2[i][1], TierR2[i][0], TierR2[i])
+            TierR2.remove(TierR2[i])                
+            print(len(TierR2))
+            print('i=', i)
+        else:
+            i += 1
+    i = 0
+    while i < len(TierR3):
+        print("----------")
+        print(len(TierR3))
+        print('i=', i)
+        print(TierR3[i][1])
+        if iLower <= TierR3[i][1] < iUpper:
+            print('Delete:',TierR3[i][1], TierR3[i][0], TierR3[i])
+            TierR3.remove(TierR3[i])                
+            print(len(TierR3))
+            print('i=', i)
+        else:
+            i += 1
 
     print('R1 Count=', len(TierR1))
-    print(TierR1)
     print("End Delete Riffles")
     print("----------")
     return
@@ -293,7 +302,7 @@ def find_NextDSRiffle(l, t, targetSTA, targetElev):
         print(rNext[1], rNext[13])
 
         #Check length from previous
-        if rNext[1] > targetSTA: 
+        if rNext[1] >= targetSTA: 
             #Check that invert is within 0.1ft of target invert
             if abs(rNext[13]-targetElev) < 0.1:
                 index = rNext[0]
@@ -308,22 +317,23 @@ def find_NextUSRiffle(l, t, targetSTA, targetElev):
     print('target:', targetSTA, targetElev)
     #print("i = ", i)
     #Loop Through upstream Riffles
-    for i in range(t, 0, -1):       #could try reversed(range()), may be faster
+    for i in range(t-1, 0, -1):       #could try reversed(range()), may be faster
         #gets next US Riffle
         rNext = l[i]
 
         #Consider just making this a variable of the riffle (targetSTA)
         #rNext_EndStation = rSTA + rL + pL
         rNext_EndStation = rNext[1] + rNext[8] + rNext[8] 
+        
         #rNext_EndElev = Elevation - Drop
         rNext_EndElev = rNext[13] - rNext[10]
 
         print(rNext[1], rNext[13], rNext[10], rNext_EndStation, rNext_EndElev)
 
         #End of Pool for US Riffle needs to be before targetSTA
-        if rNext_EndStation < targetSTA: 
+        if rNext_EndStation <= targetSTA: 
             #Check that invert is within 0.1ft of target invert
-            if abs(rNext_EndElev-targetElev) < 0.1:
+            if abs(rNext_EndElev-targetElev) <= 0.1:
                 index = rNext[0]
                 return index, i
     return None, i
