@@ -44,10 +44,26 @@ def suitability(windows):
     windows3 = []
     windows4 = []
     
+    def p_ratio_list(windows):
+        p = []
+        
+        for i in windows.values():
+            p.append(i['p_ratio'])
+        
+        p.sort()
+        ten_percent = math.floor(len(p)/10)
+        top_ten = p[-ten_percent:]
+        bottom_ten = p[:ten_percent]
+        stats = [min(p), max(p), len(p), range(p), min(top_ten), max(bottom_ten)]
+        return stats
+
+    p_ratio_stats = p_ratio_list(windows)
+    
     #p-ratio
     for key,value in windows.items():
-        if value['p_ratio'] < 1:
+        if value['p_ratio'] > stats[4] :
             windows2.append(key)
+
     #drop
     for key, value in windows.items():
         if key in windows2:
