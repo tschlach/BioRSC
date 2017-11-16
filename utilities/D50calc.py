@@ -9,7 +9,6 @@ Inputs:
 Tasks:
 
 """
-
 # D50 is the stone size for 50% passing
 import math
 import rhinoscriptsyntax as rs
