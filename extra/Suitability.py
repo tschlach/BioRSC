@@ -131,99 +131,107 @@ def place_Riffles(centerline):
     #+++++++++++
     #Loop Through values (while?)
     #Get Max Value (just bend for now, later to be a weighted value)
-    index1, value, i = maxList(TierR1, 2)
-        #index1 = index in Riffles
-        #i = index in TierR1
+    while len(TierR1) != 0:
+        index1, value, i = maxList(TierR1, 2)
+            #index1 = index in Riffles
+            #i = index in TierR1
 
-    #Append to final List
-    listFinal.append(centerline.riffles[index1])
+        #Append to final List
+        listFinal.append(centerline.riffles[index1])
 
-    #get riffle/pool length
-    rCurrent = centerline.riffles[index1]
-    rSTA = rCurrent.station
-    print_RiffleInfo(rCurrent, index1)
+        #get riffle/pool length
+        rCurrent = centerline.riffles[index1]
+        rSTA = rCurrent.station
+        print_RiffleInfo(rCurrent, index1)
 
-    #delete from Tier
-    TierR1.remove(TierR1[i])
+        #delete from Tier
+        TierR1.remove(TierR1[i])
 
-    #++++++++++++++++++++++++++++++++++++++++++++++
-    #Search 2
-    #++++++++++++++++++++++++++++++++++++++++++++++
-    #assume pool length = riffle length
-    #this will need to be adjusted later more intelligently
+        #++++++++++++++++++++++++++++++++++++++++++++++
+        #Search 2
+        #++++++++++++++++++++++++++++++++++++++++++++++
+        #assume pool length = riffle length
+        #this will need to be adjusted later more intelligently
 
-    #Loop Through
-    #Look downstream at next value distance down of riffle and pool length from last
-    #find station nearest to end of US riffle
-    print("Looking Downstream")
+        #Loop Through
+        #Look downstream at next value distance down of riffle and pool length from last
+        #find station nearest to end of US riffle
+        print("Looking Downstream")
 
-    targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
-    targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
-    t = i
-    
-    removeLowerLimit = rSTA
-    removeUpperLimit = targetSTA
-
-    while t < len(TierR1):
-        print(t)
-        index2, t = find_NextDSRiffle(TierR1, t, targetSTA, targetElev)
-        print(t)
+        targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
+        targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
+        t = i
         
-        if index2 != None:
-            listFinal.append(centerline.riffles[index2])
-            rCurrent = centerline.riffles[index2]
-            targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
-            targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
-            removeUpperLimit = targetSTA
-            print_RiffleInfo(rCurrent, index2)
-        else:
-            t = len(TierR1)
+        removeLowerLimit = rSTA
+        removeUpperLimit = targetSTA
 
-    print("Lower Limit=", removeLowerLimit, '; Upper Limit=', removeUpperLimit)
-    
-    delete_Riffles(removeLowerLimit, removeUpperLimit)
+        while t < len(TierR1):
+            print(t)
+            index2, t = find_NextDSRiffle(TierR1, t, targetSTA, targetElev)
+            print(t)
+            
+            if index2 != None:
+                listFinal.append(centerline.riffles[index2])
+                rCurrent = centerline.riffles[index2]
+                targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
+                targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
+                removeUpperLimit = targetSTA
+                print_RiffleInfo(rCurrent, index2)
+            else:
+                t = len(TierR1)
 
-    #Loop Through
-    '''
-    Look upstream at next value distance down of riffle and pool length from last
-    If yes
-        #add to final list
-        #delete from tier
-    if no, set up loop to look in either direction by a specific amount
-    '''
-
-    #Reset i to original value from first Riffle
-    #get riffle/pool length of first riffle
-    rCurrent = centerline.riffles[index1]
-    targetSTA = rCurrent.station 
-    targetElev = rCurrent.pt.Z 
-    print("Looking Upstream")
-    t = i
-
-    while t > 0:
-        print(t)
-        index2, t = find_NextUSRiffle(TierR1, t, targetSTA, targetElev)
-        print(t)
+        print("Lower Limit=", removeLowerLimit, '; Upper Limit=', removeUpperLimit)
         
-        if index2 != None:
-            listFinal.append(centerline.riffles[index2])
-            rCurrent = centerline.riffles[index2]
-            targetSTA = rCurrent.station 
-            targetElev = rCurrent.pt.Z 
-            print_RiffleInfo(rCurrent, index2)
-        else:
-            t = 0    
-    # print(listFinal)
+        delete_Riffles(removeLowerLimit, removeUpperLimit)
 
+        #Loop Through
+        '''
+        Look upstream at next value distance down of riffle and pool length from last
+        If yes
+            #add to final list
+            #delete from tier
+        if no, set up loop to look in either direction by a specific amount
+        '''
+
+        #Reset i to original value from first Riffle
+        #get riffle/pool length of first riffle
+        rCurrent = centerline.riffles[index1]
+        targetSTA = rCurrent.station 
+        targetElev = rCurrent.pt.Z 
+        print("Looking Upstream")
+        t = i
         
+        removeUpperLimit = targetSTA 
 
-    print("----------")
-    print("TierR1, length=", len(TierR1))
-    #print(TierR1)
-    print("----------")
+        while t > 0:
+            print(t)
+            index2, t = find_NextUSRiffle(TierR1, t, targetSTA, targetElev)
+            print(t)
+            
+            if index2 != None:
+                listFinal.append(centerline.riffles[index2])
+                rCurrent = centerline.riffles[index2]
+                targetSTA = rCurrent.station 
+                targetElev = rCurrent.pt.Z
+                removeLowerLimit = targetSTA 
+                print_RiffleInfo(rCurrent, index2)
+            else:
+                t = 0          
+
+
+        print("Lower Limit=", removeLowerLimit, '; Upper Limit=', removeUpperLimit)
+        
+        delete_Riffles(removeLowerLimit, removeUpperLimit)
+
+
+        print("----------")
+        print("TierR1, length=", len(TierR1))
+        #print(TierR1)
+        print("----------")
+
+    print(TierR1)
 
     return listFinal
-
 
 def print_RiffleInfo(l, i):
     print("----------")
@@ -315,7 +323,7 @@ def find_NextUSRiffle(l, t, targetSTA, targetElev):
 
     print('t = ', t)
     print('target:', targetSTA, targetElev)
-    #print("i = ", i)
+
     #Loop Through upstream Riffles
     for i in range(t-1, 0, -1):       #could try reversed(range()), may be faster
         #gets next US Riffle
@@ -336,93 +344,9 @@ def find_NextUSRiffle(l, t, targetSTA, targetElev):
             if abs(rNext_EndElev-targetElev) <= 0.1:
                 index = rNext[0]
                 return index, i
-    return None, i
-
-def suitability(centerline):
-    
-    Tier1 = []
-    Tier2 = []
-    Tier3 = []
-    
-    for i in range(len(centerline.riffles)):
-        if centerline.riffles[i].geometry == "Riffle":
-            if centerline.riffles[i].bend_ratio2 >200:
-                Tier1.append(centerline.riffles[i])
-
-    sortArray = []
-        
-    for i in Tier1:
-        sortArray.append(int(i.station))
-        good_win = True
-        for q in range(int(i.station - 25), int(i.station)):
-            if q in sortArray:
-                good_win = False
-        if good_win == True:
-            Tier2.append(i)
-
-    return Tier2
+    return None, None
 
 
-    #Filter1
-    #add RifflePoint features to Tier1 Array
-    #for i in range(len(centerline.riffles)):
-    #    if centerline.riffles[i].geometry == "Riffle":
-    #        if centerline.riffles[i].bend_ratio < .18:       #to be replaced with Tyler's update
-    #            Tier1.append(centerline.riffles[i])
-
-    #Tier1
-    #riffles.geometry - Check riffle Geometry has as a Riffle
-    #riffles.bend_ratio - Check that it is straight enough for Riffle
-    #Based on: riffles.geometry, riffles.bend_ratio
-
-
-    #Tier2
-    #riffles.riffleWidth - prefer to use least rock, so prioritize narrower riffles 
-        #(note: riffle width should be calculated so that appropriate width/depth
-        # is calculated in first place)
-    #Riffles.BankRightIncision - smaller depths better for placement for less stone?
-    #Riffles.BankLeftIncision - smaller depths better for placement for less stone?
-
-
-    #Where to place these in Suitability???
-        #riffles.slope 
-        #riffles.station
-        #riffles.riffle_length 
-        #riffles.RiffleSlope
-        #riffles.RiffleDrop 
-
-    #Suitability steps:
-    #Step 1: Check 
-
-    #Tier1
-#    for i in Tier1:
-#        print(i.station)
-#        print(i)
-
-    #sortArray = []
-    #print(Tier1)
-    #Tier_new = sorted(Tier1, Tier1.riffles.bend_ratio)
-    
-#    for i in Tier1:
-        
-        # good_win = True
-        # for q in range (i - 50, i):
-        #     if q in windows4:
-        #         good_win = False
-        # if good_win == True:
-        #     windows4.append(i)
-    #arrSort = [,,]    #[i, station, bend_ratio]
-        
-    #for i in Tier1:
-
-
-
-
-
-    #    print(i.station)
-    #    print(i.bend_ratio)
-
-    #return Tier1
 
 listVariables = get_VariableArray(crvRifflePoints)
 
