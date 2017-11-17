@@ -172,6 +172,7 @@ class RifflePoint(object):
         self.station = station
         self.bend_ratio = None
         self.bend_ratio2 = None
+        self.index = self.station/crvCenterline.lenDivision
 
         #Bank Information
         self.ptBankRight = rs.EvaluateCurve(crvBankRight, rs.CurveClosestPoint(crvBankRight, self.pt))

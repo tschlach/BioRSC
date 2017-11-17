@@ -12,46 +12,44 @@ TierR2 = []
 TierR3 = []
 TierP1 = []
 TierNull = []
-listFinal  =[]
-rifflesFinal = []
 
 def get_VariableArray(centerline):
 
     w, h = 14, len(centerline.riffles)
-    listVariables = [[None] * w for i in range(h)]
+    arrVariables = [[None] * w for i in range(h)]
     
     c = 0
-    # print(listVariables)
+    # print(arrVariables)
  
     for i in centerline.riffles:     #i = RifflePoint Class feature
 
-        listVariables[c][0] = c
-        listVariables[c][1] = i.station 
-        listVariables[c][2] = i.bend_ratio2  #i.bend_ratio
-        listVariables[c][3] = i.bank_width
-        listVariables[c][4] = i.BankRightIncision
-        listVariables[c][5] = i.BankLeftIncision
-        listVariables[c][6] = i.elevBankLow
-        listVariables[c][7] = i.valley_slope
-        listVariables[c][8] = i.riffle_length
-        listVariables[c][9] = i.riffle_slope
-        listVariables[c][10] = i.riffle_drop
-        listVariables[c][11] = i.riffle_width
-        listVariables[c][12] = i.geometry
-        listVariables[c][13] = i.pt.Z 
-        # listVariables[c][x] = 
-        # listVariables[c][x] = i.parameter
-        # listVariables[c][x] = i.tangent
-        # listVariables[c][x] = i.slopeAtPoint
-        # listVariables[c][x] = i.channel_slope
-        # listVariables[c][x] = i.valley_slope
-        # listVariables[c][x] = i.pt
-        # listVariables[c][x] = i.ptBankRight
-        # listVariables[c][x] = i.ptBankLeft 
+        arrVariables[c][0] = i.index
+        arrVariables[c][1] = i.station 
+        arrVariables[c][2] = i.bend_ratio2  #i.bend_ratio
+        arrVariables[c][3] = i.bank_width
+        arrVariables[c][4] = i.BankRightIncision
+        arrVariables[c][5] = i.BankLeftIncision
+        arrVariables[c][6] = i.elevBankLow
+        arrVariables[c][7] = i.valley_slope
+        arrVariables[c][8] = i.riffle_length
+        arrVariables[c][9] = i.riffle_slope
+        arrVariables[c][10] = i.riffle_drop
+        arrVariables[c][11] = i.riffle_width
+        arrVariables[c][12] = i.geometry
+        arrVariables[c][13] = i.pt.Z 
+        # arrVariables[c][x] = 
+        # arrVariables[c][x] = i.parameter
+        # arrVariables[c][x] = i.tangent
+        # arrVariables[c][x] = i.slopeAtPoint
+        # arrVariables[c][x] = i.channel_slope
+        # arrVariables[c][x] = i.valley_slope
+        # arrVariables[c][x] = i.pt
+        # arrVariables[c][x] = i.ptBankRight
+        # arrVariables[c][x] = i.ptBankLeft 
 
-        c = c + 1
+        c += 1
    
-    return  listVariables
+    return  arrVariables
 
 def maxList(l, v):
     #l = 2D list of variables
@@ -115,46 +113,36 @@ def get_RiffleTiers(list2D):
             TierNull.append(list2D[i])
     return
 
-def place_Riffles(centerline, listMaster):
-    #centerline: centerline object of all RifflePoints
-    #listMaster: 2D list version of all Riffles and relevant variables
-
-    iCL = 0                     #index of RifflePoints centerline
-    iLM = None                  #index of listMaster
-    iTier = None
-    listFinal = []              #2D List of Final Riffles, not of RifflePoint Objects
-    removeLowerLimit = None     
-    removeUpperLimit = None
-
-
+def place_Riffles(centerline):
+    
     print("----------")
     print("TierR1, length=", len(TierR1))
+    #print(TierR1)
     print("----------")
 
-
-    #Add start of thalweg/centerline as riffle
-    listFinal.append(listMaster[iLM])
-    listMaster.remove(listMaster[iLM])          #Note: New 0 will be second Point, this still shouldn't be the best way. -BA
-    # listFinal.append(centerline.riffles[0])
+    listFinal = []
+    listFinal.append(centerline.riffles[0])
+    removeLowerLimit = None
+    removeUpperLimit = None
     #deleteRange = range()
 
     #+++++++++++
     #search 1
     #+++++++++++
-    #Loop Through Tier1 to get Max values and associated upstream and downstream values that are preferred
+    #Loop Through values (while?)
     #Get Max Value (just bend for now, later to be a weighted value)
     while len(TierR1) != 0:
-        
-        #Return Max Value in list and indexes      
-        iLM, value, iTier = maxList(TierR1, 2)          #(,X) X: bend_ratio2
-            
+        index1, value, i = maxList(TierR1, 2)
+            #index1 = index in Riffles
+            #i = index in TierR1
+
         #Append to final List
-        listFinal.append(listMaster[iLM])
+        listFinal.append(centerline.riffles[index1])
 
         #get riffle/pool length
-        rCurrent = centerline.riffles[iLM]
+        rCurrent = centerline.riffles[index1]
         rSTA = rCurrent.station
-        print_RiffleInfo(rCurrent, iLM)
+        print_RiffleInfo(rCurrent, index1)
 
         #delete from Tier
         TierR1.remove(TierR1[i])
@@ -207,7 +195,7 @@ def place_Riffles(centerline, listMaster):
 
         #Reset i to original value from first Riffle
         #get riffle/pool length of first riffle
-        rCurrent = centerline.riffles[iRM]
+        rCurrent = centerline.riffles[index1]
         targetSTA = rCurrent.station 
         targetElev = rCurrent.pt.Z 
         print("Looking Upstream")
@@ -360,11 +348,10 @@ def find_NextUSRiffle(l, t, targetSTA, targetElev):
 
 
 
-listMaster = get_VariableArray(crvRifflePoints)
+listVariables = get_VariableArray(crvRifflePoints)
 
-get_RiffleTiers(listMaster)
-
-Riffles = place_Riffles(crvRifflePoints, listMaster)
+get_RiffleTiers(listVariables)
+Riffles = place_Riffles(crvRifflePoints)
 
 
 # print("TierR1")
