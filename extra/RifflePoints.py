@@ -93,7 +93,7 @@ class Centerline(object):
     def createRiffles(self, lenDivision):
         for i in range(len(self.points)):
             station = i * lenDivision
-            self.riffles.append(RifflePoint(self.points[i], self.Thalweg, self.BankRight, self.BankLeft, station))
+            self.riffles.append(RifflePoint(self.points[i], self.Thalweg, self.BankRight, self.BankLeft, station, lenDivision))
         return
     
 
@@ -161,7 +161,7 @@ class RifflePoint(object):
     #Notes to think about:
     # -Does difference in left/right bank elevation matter in design?
 
-    def __init__(self, point, crvCenterline, crvBankRight, crvBankLeft, station):
+    def __init__(self, point, crvCenterline, crvBankRight, crvBankLeft, station, lenDivision):
         #Define Initial Values
         self.pt = point
         self.parameter = rs.CurveClosestPoint(crvCenterline, point)     #Parameter (t) for point on centerline
@@ -172,7 +172,7 @@ class RifflePoint(object):
         self.station = station
         self.bend_ratio = None
         self.bend_ratio2 = None
-        self.index = self.station/crvCenterline.lenDivision
+        self.index = self.station/lenDivision
 
         #Bank Information
         self.ptBankRight = rs.EvaluateCurve(crvBankRight, rs.CurveClosestPoint(crvBankRight, self.pt))
@@ -205,25 +205,25 @@ crvRifflePoints = Centerline(crvThalweg, crvRightBank, crvLeftBank, interval)
 
     
 
-attr = []
-attr.append('pt.Z')
-attr.append('parameter')
-attr.append('tangent')
-attr.append('slopeAtPoint')
-attr.append('channel_slope')
-attr.append('valley_slope')
-attr.append('station')
-attr.append('bend_ratio')
-attr.append('ptBankRight')
-attr.append('ptBankLeft')
-attr.append('bank_width')
-attr.append('BankRightIncision')
-attr.append('BankLeftIncision')
-attr.append('elevBankLow')
-attr.append('valley_slope')
-attr.append('riffle_length')
-attr.append('riffle_slope')
-attr.append('riffle_drop')
-attr.append('riffle_width')
-attr.append('geometry')
+# attr = []
+# attr.append('pt.Z')
+# attr.append('parameter')
+# attr.append('tangent')
+# attr.append('slopeAtPoint')
+# attr.append('channel_slope')
+# attr.append('valley_slope')
+# attr.append('station')
+# attr.append('bend_ratio')
+# attr.append('ptBankRight')
+# attr.append('ptBankLeft')
+# attr.append('bank_width')
+# attr.append('BankRightIncision')
+# attr.append('BankLeftIncision')
+# attr.append('elevBankLow')
+# attr.append('valley_slope')
+# attr.append('riffle_length')
+# attr.append('riffle_slope')
+# attr.append('riffle_drop')
+# attr.append('riffle_width')
+# attr.append('geometry')
 
