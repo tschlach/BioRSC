@@ -59,6 +59,8 @@ class Centerline(object):
         #     print("----------")
         
     def getIdealRiffleDesign(self, riffle_drop_min, riffle_length_min): ##need an additional variable - that is able to be reset
+        # ???Why 0:160???
+        
         for i in self.riffles[0:160]:
             check = False
             count = 0
@@ -72,9 +74,9 @@ class Centerline(object):
 
                 print('STA=', i.station, '; Valley Slope=', i.valley_slope, '; PL=', pool_length, '; rLt=', riffle_length_test, '; rDt=', riffle_drop_test)
                 if pool_length >= riffle_length_test:
-                    i.riffle_length = riffle_length_test
-                    i.riffle_drop = riffle_drop_test
-                    i.riffle_slope = riffle_drop_test / riffle_length_test
+                    i.riffle.length = riffle_length_test
+                    i.riffle.drop = riffle_drop_test
+                    i.riffle.slope = riffle_drop_test / riffle_length_test
                     i.geometry = "Riffle"
                     check = True
                 else:
@@ -93,16 +95,14 @@ class Centerline(object):
     def createRiffles(self, lenDivision):
         for i in range(len(self.points)):
             station = i * lenDivision
-            self.riffles.append(RifflePoint(self.points[i], self.Thalweg, self.BankRight, self.BankLeft, station, lenDivision))
+            self.riffles.append(StreamPoint(self.points[i], self.Thalweg, self.BankRight, self.BankLeft, station, lenDivision))
         return
     
-
     def getBendRatios2(self, t):
         for i in range(len(self.riffles)-t):
             self.riffles[i].bend_ratio2 = rs.CurveCurvature(self.Thalweg, self.riffles[i].parameter)[3]
         return
         
-
     def getBendRatios(self, t):
         array_bend_ratio = []
 
@@ -128,9 +128,7 @@ class Centerline(object):
             new_bend_ratio = (n - old_min) / old_range * new_range + new_min
             self.riffles[i].bend_ratio = new_bend_ratio
         return
-
-
-      
+    
     #getSlopes defines the *discrete* slopes of the line, based on the straight distance between points on the line
     def getSlopes(self, winChannel, winValley):
         
@@ -156,7 +154,7 @@ class Centerline(object):
         return
 
 
-class RifflePoint(object):
+class StreamPoint(object):
     """docstring for ClassName"""
     #Notes to think about:
     # -Does difference in left/right bank elevation matter in design?
@@ -172,7 +170,9 @@ class RifflePoint(object):
         self.station = station
         self.bend_ratio = None
         self.bend_ratio2 = None
-        self.index = self.station/lenDivision
+        self.index = int(self.station/lenDivision)
+        self.suitability = 0
+        self.Use = 0                    #1 = Riffle, 0 = Don't Use, -1 = Pool (pool points not usedd for now)
 
         #Bank Information
         self.ptBankRight = rs.EvaluateCurve(crvBankRight, rs.CurveClosestPoint(crvBankRight, self.pt))
@@ -184,17 +184,40 @@ class RifflePoint(object):
         self.valley_slope = None
 
         #Proposed Riffle Design Information
-        self.riffle_length = None
-        self.riffle_slope = None
-        self.riffle_drop = None
-        self.riffle_width = None     #Calc based on Bank Width
+        self.riffle = RifflePoint()
+        self.pool = PoolPoint()
         self.geometry = None
-
-               
+        
         #project Thalweg to Horizontal Plane
         crvCenterlineHoriz = crvCenterline
         rs.ScaleObject(crvCenterlineHoriz, (0,0,0), (1,1,0))
         self.parameterHorizontal = rs.CurveClosestPoint(crvCenterlineHoriz, point)
+
+
+class RifflePoint(object):
+    
+    def __init__(self):
+        #Proposed Riffle Design Information
+        self.length = None
+        self.slope = None
+        self.drop = None
+        self.width = None     #Calc based on Bank Width
+        self.depth = None
+        self.station_end = None 
+        self.station_end = None
+    
+class PoolPoint(object):
+
+    def __init__(self):
+        #Proposed Riffle Design Information
+        self.length = None
+        self.slope = None
+        self.drop = None
+        self.width = None     #Calc based on Bank Width
+        self.station_start = None
+        self.station_end = None
+               
+
 
 def horizontal_distance(pt1, pt2):
     distance = math.sqrt(math.pow(pt2.X - pt1.X, 2) + math.pow(pt2.Y - pt1.Y, 2)) 
