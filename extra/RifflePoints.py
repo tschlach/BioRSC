@@ -74,10 +74,19 @@ class Centerline(object):
 
                 print('STA=', i.station, '; Valley Slope=', i.valley_slope, '; PL=', pool_length, '; rLt=', riffle_length_test, '; rDt=', riffle_drop_test)
                 if pool_length >= riffle_length_test:
+                    i.geometry = "Riffle"
                     i.riffle.length = riffle_length_test
                     i.riffle.drop = riffle_drop_test
                     i.riffle.slope = riffle_drop_test / riffle_length_test
-                    i.geometry = "Riffle"
+                    i.riffle.station_end = i.station + i.riffle.length
+                    
+                    #!!!This need to be adjusted, was only in because bad LiDAR
+                    if pool_length == 10000:
+                        i.pool.length = i.riffle.length
+                    else:
+                        i.pool.length = pool_length
+                    i.pool.station_start = i.riffle.station_end
+                    i.pool.station_end = i.station + i.riffle.length + i.pool.length
                     check = True
                 else:
                     if riffle_length_test < 30:
@@ -172,7 +181,7 @@ class StreamPoint(object):
         self.bend_ratio2 = None
         self.index = int(self.station/lenDivision)
         self.suitability = 0
-        self.Use = 0                    #1 = Riffle, 0 = Don't Use, -1 = Pool (pool points not usedd for now)
+        self.use = None                    #1 = Riffle, 0 = Don't Use, -1 = Pool (pool points not usedd for now)
 
         #Bank Information
         self.ptBankRight = rs.EvaluateCurve(crvBankRight, rs.CurveClosestPoint(crvBankRight, self.pt))
@@ -203,7 +212,7 @@ class RifflePoint(object):
         self.drop = None
         self.width = None     #Calc based on Bank Width
         self.depth = None
-        self.station_end = None 
+        self.station_start = None 
         self.station_end = None
     
 class PoolPoint(object):
