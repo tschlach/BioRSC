@@ -43,6 +43,7 @@ for i in ctrlnStream.riffles:
 
 		#pool End
 		ptsPoolEnd = rs.DivideCurveLength(crvThalweg, i.pool.station_end, True, True)
+		print(i.pool.station_end, ptsPoolEnd)
 		poolEnd.append(ptsPoolEnd[1])
 		print('poolend=', i.pool.station_end)
 

@@ -34,9 +34,13 @@ def place_Riffles(centerline):
     gapTolerance = 20               #Feet between riffle structures that could still have a structure
     suitTol = 0.90                  #Tolerance for selecting to move riffle
  
+
+    #Remove riffles at end that do not have length in centerline for pool
+    remove_endRiffles(centerline)
+
     #Loop Through values (while?)
     #Get Max Value (just bend for now, later to be a weighted value)
-    for i in range(0,50,1):
+    for i in range(len(centerline.riffles)):
         print('')
         print('-----Place Riffle----i=', i)
 
@@ -155,6 +159,15 @@ def place_Riffles(centerline):
 
 
     return 
+
+def remove_endRiffles(cl):
+
+    for i in cl.riffles:
+        if i.pool.station_end > cl.riffles[len(cl.riffles)-1].station:
+            i.use = 0
+            print(i.station)
+    return
+
 
 def set_RiffleUse(cl, iSet):
     #iSet: 
