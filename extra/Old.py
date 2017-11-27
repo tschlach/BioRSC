@@ -1,5 +1,35 @@
 Old
 
+
+def find_Gaps(cl, iCurrent):
+    #cl:  centerline class
+    #iCurrent: index of current riffle  
+    iUS = None              #index of Upstream riffle already flagged
+    iDS = None              #index of Downstream riffle already flagged
+    gapUS = None
+    gapDS = None
+
+    print('find_Gaps, iCurrent=', iCurrent)
+    #FIND UPSTREAM RIFFLE
+    #NOTE: THIS SEARCHES ALL THE WAY TO THE BEGINNING. ONLY NEED TO SEARCH WITHIN SELECT RANGE ?????
+    for i in range(iCurrent-1, 0, -1):
+        # print('fg i=', i)
+        if cl.riffles[i].use == 0:
+            iUS = i
+            gapUS = cl.riffles[iCurrent].station - cl.riffles[i].pool.station_end  
+            # print('1fg iDS, gapDS=', iDS, gapDS)
+
+    #FIND DOWNSTREAM RIFFLE
+    #NOTE: THIS SEARCHES ALL THE WAY TO THE BEGINNING. ONLY NEED TO SEARCH WITHIN SELECT RANGE ?????
+    for i in range(iCurrent + 1, len(cl.riffles), 1):
+        if cl.riffles[i].use == 1:
+            iDS = i
+            gapDS = cl.riffles[i].station - cl.riffles[iCurrent].pool.station_end
+
+    print('2fg iDS, gapDS=', iDS, gapDS)
+    return iUS, gapUS, iDS, gapDS
+
+    
 def get_RiffleTiers(list_values):
 
     #Filter 1
@@ -158,3 +188,100 @@ def get_VariableArray(centerline):
         c += 1
    
     return  list_value
+
+    #Append to final List
+        # list_Final.append(listAll[iLM_Max])
+
+        # #get riffle/pool length
+        # rCurrent = centerline.riffles[iLM_Max]
+        # rSTA = rCurrent.station
+        # print_RiffleInfo(rCurrent, iLM_Max)
+
+        # #delete from Tier
+        # TierR1.remove(TierR1[iTier_Max])
+
+        #++++++++++++++++++++++++++++++++++++++++++++++
+        #Search 2
+        #++++++++++++++++++++++++++++++++++++++++++++++
+        #assume pool length = riffle length
+        #this will need to be adjusted later more intelligently
+
+        #Loop Through
+        #Look downstream at next value distance down of riffle and pool length from last
+        #find station nearest to end of US riffle
+        # print("Looking Downstream")
+
+        # targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
+        # targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
+        # t = iTier_Max
+        
+        # removeLowerLimit = rSTA
+        # removeUpperLimit = targetSTA
+
+        # while t < len(TierR1):
+        #     print(t)
+        #     iLM_Next, t = find_NextDSRiffle(TierR1, t, targetSTA, targetElev)
+        #     print(t)
+
+        #     if iLM_Next != None:
+
+        #         list_Final.append(listAll[iLM_Next])
+        #         rCurrent = centerline.riffles[iLM_Next]
+        #         targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
+        #         targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
+        #         removeUpperLimit = targetSTA
+        #         print_RiffleInfo(rCurrent, iLM_Next)
+        #     else:
+        #         t = len(TierR1)
+
+        # print("Lower Limit=", removeLowerLimit, '; Upper Limit=', removeUpperLimit)
+        
+        # delete_Riffles(removeLowerLimit, removeUpperLimit)
+
+        # #Loop Through
+        # '''
+        # Look upstream at next value distance down of riffle and pool length from last
+        # If yes
+        #     #add to final list
+        #     #delete from tier
+        # if no, set up loop to look in either direction by a specific amount
+        # '''
+
+        # #Reset i to original value from first Riffle
+        # #get riffle/pool length of first riffle
+        # rCurrent = centerline.riffles[iLM_Max]
+        # targetSTA = rCurrent.station 
+        # targetElev = rCurrent.pt.Z 
+        # print("Looking Upstream")
+        # t = iTier_Max
+        
+        # removeUpperLimit = targetSTA 
+
+        # while t > 0:
+        #     print(t)
+        #     iLM_Next, t = find_NextUSRiffle(TierR1, t, targetSTA, targetElev)
+        #     print(t)
+            
+        #     if iLM_Next != None:
+        #         list_Final.append(listAll[iLM_Next])
+        #         rCurrent = centerline.riffles[iLM_Next]
+        #         targetSTA = rCurrent.station 
+        #         targetElev = rCurrent.pt.Z
+        #         removeLowerLimit = targetSTA 
+        #         print_RiffleInfo(rCurrent, iLM_Next)
+        #     else:
+        #         t = 0          
+
+        # test +=1
+                
+        # print("Lower Limit=", removeLowerLimit, '; Upper Limit=', removeUpperLimit)
+        
+        # delete_Riffles(removeLowerLimit, removeUpperLimit)
+
+
+        # print("----------")
+        # print("TierR1, length=", len(TierR1))
+        # #print(TierR1)
+        # print("----------")
+
+    # print(TierR1)

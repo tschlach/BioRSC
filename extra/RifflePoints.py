@@ -61,18 +61,22 @@ class Centerline(object):
     def getIdealRiffleDesign(self, riffle_drop_min, riffle_length_min): ##need an additional variable - that is able to be reset
         # ???Why 0:160???
         
-        for i in self.riffles[0:160]:
+        for i in self.riffles: #[0:160]:
             check = False
             count = 0
             riffle_drop_test = riffle_drop_min
             riffle_length_test = riffle_length_min
+            
+
             while check == False and count < 35:
-                if i.valley_slope == 0: 
+                
+                print('channel slope;', i.channel_slope)
+                if i.channel_slope == 0: 
                     pool_length = 10000
                 else:  
-                    pool_length = abs((riffle_drop_test / i.valley_slope) - riffle_length_test)
+                    pool_length = abs((riffle_drop_test / i.channel_slope) - riffle_length_test)
 
-                print('STA=', i.station, '; Valley Slope=', i.valley_slope, '; PL=', pool_length, '; rLt=', riffle_length_test, '; rDt=', riffle_drop_test)
+                print('STA=', i.station, '; Valley Slope=', i.channel_slope, '; PL=', pool_length, '; rLt=', riffle_length_test, '; rDt=', riffle_drop_test)
                 if pool_length >= riffle_length_test:
                     i.geometry = "Riffle"
                     i.riffle.length = riffle_length_test
@@ -159,7 +163,8 @@ class Centerline(object):
             sta2 = self.riffles[i + t2].station
             pt1_z = self.riffles[i - t1].elevBankLow
             pt2_z = self.riffles[i + t2].elevBankLow
-            self.riffles[i].valley_slope = (pt1_z - pt2_z)/(sta1 - sta2)          
+            self.riffles[i].valley_slope = (pt1_z - pt2_z)/(sta1 - sta2)
+            print('Valley Slope:', self.riffles[i].valley_slope, '; winValley:', winValley, '; t1:', t1, ' t2:', t2, )         
         return
 
 
