@@ -8,222 +8,244 @@ from operator import itemgetter
         #http://www.grasshopper3d.com/forum/topics/scipy-and-numpy
 
 
-TierR1 = []
-TierR2 = []
-TierR3 = []
-TierP1 = []
-TierNull = []
 
-def get_VariableArray(centerline):
 
-    w, h = 14, len(centerline.riffles)
-    list_values = [[None] * w for i in range(h)]
-        
-    c = 0
-    # print(list_values)
- 
-    for i in centerline.riffles:     #i = RifflePoint Class feature
 
-        list_values[c][0] = i.index
-        list_values[c][1] = i.station 
-        list_values[c][2] = i.bend_ratio2  #i.bend_ratio
-        list_values[c][3] = i.bank_width
-        list_values[c][4] = i.BankRightIncision
-        list_values[c][5] = i.BankLeftIncision
-        list_values[c][6] = i.elevBankLow
-        list_values[c][7] = i.valley_slope
-        list_values[c][8] = i.riffle_length
-        list_values[c][9] = i.riffle_slope
-        list_values[c][10] = i.riffle_drop
-        list_values[c][11] = i.riffle_width
-        list_values[c][12] = i.geometry
-        list_values[c][13] = i.pt.Z 
-        # list_values[c][x] = 
-        # list_values[c][x] = i.parameter
-        # list_values[c][x] = i.tangent
-        # list_values[c][x] = i.slopeAtPoint
-        # list_values[c][x] = i.channel_slope
-        # list_values[c][x] = i.valley_slope
-        # list_values[c][x] = i.pt
-        # list_values[c][x] = i.ptBankRight
-        # list_values[c][x] = i.ptBankLeft 
 
-        c += 1
-   
-    return  list_values
-
-def get_RiffleTiers(list_values):
+def calculate_Suitability(centerline):
 
     #Filter 1
-    for i in range(len(list_values)):
-        if list_values[i][12] == "Riffle":                   #Geometry Check
-            if list_values[i][2] > 10:                       #Bend_ratio Check (value random, need to select)
-                TierR1.append(list_values[i])
-            elif list_values[i][2] > 5:
-                TierR2.append(list_values[i])
-            else:
-                TierR3.append(list_values[i])
-        elif list_values[i][12] == "Pool":                   #Geometry Check
-            TierP1.append(list_values[i])
+    for i in centerline.riffles:
+        if i.geometry == "Riffle":                   #Geometry Check
+            i.suitability = i.bend_ratio2
+
+        elif i.geometry == "Pool":                   #Geometry Check
+            i.suitability = -i.bend_ratio2
+
         else:
-            TierNull.append(list_values[i])
+            i.suitability = 0
     return 
 
-def place_Riffles(centerline, listAll):
-    
-    list_Final = []
-    removeLowerLimit = None
-    removeUpperLimit = None
-    # iLM_Max = 0                      #index of listMain for current riffle with max value, which equals index of list of Riffles
-    iLM_Next = None                     #index of listMain for next riffle, which equals index of list of Riffles 
-    iTier = None                        #index of value relative to current Tier
-    iTier_Max = None
+def place_Riffles(centerline):
+ 
+    iMax = None                     #index of riffle with max value, which equals index of list of Riffles
+    iSet = None                     #index of riffle to set "use" = 1
+    max_Suitability = None
+    gapTolerance = 20               #Feet between riffle structures that could still have a structure
+    suitTol = 0.90                  #Tolerance for selecting to move riffle
+ 
 
-    print(listAll)
-
-    print("----------")
-    print("TierR1, length=", len(TierR1))
-    print("----------")
-
-    # list_Final.append(listAll[0])        
-
-    #+++++++++++
-    #search 1
-    #+++++++++++
-    # test = 0
+    #Remove riffles at end that do not have length in centerline for pool
+    remove_endRiffles(centerline)
 
     #Loop Through values (while?)
     #Get Max Value (just bend for now, later to be a weighted value)
-    while len(TierR1) != 0: # and test < 5:
-        
+    for i in range(len(centerline.riffles)):
+        print('')
+        print('-----Place Riffle----i=', i)
 
-        iLM_Max, iTier_Max = maxList(TierR1, 2)
- 
-        #Append to final List
-        list_Final.append(listAll[iLM_Max])
+        #STEP 1: FIND MAX RIFFLE SUITABILITY VALUE
+        #
+        #---------------------
+        iMax, max_Suitability = maxSuitability(centerline)
 
-        #get riffle/pool length
-        rCurrent = centerline.riffles[iLM_Max]
-        rSTA = rCurrent.station
-        print_RiffleInfo(rCurrent, iLM_Max)
-
-        #delete from Tier
-        TierR1.remove(TierR1[iTier_Max])
-
-        #++++++++++++++++++++++++++++++++++++++++++++++
-        #Search 2
-        #++++++++++++++++++++++++++++++++++++++++++++++
-        #assume pool length = riffle length
-        #this will need to be adjusted later more intelligently
-
-        #Loop Through
-        #Look downstream at next value distance down of riffle and pool length from last
-        #find station nearest to end of US riffle
-        print("Looking Downstream")
-
-        targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
-        targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
-        t = iTier_Max
-        
-        removeLowerLimit = rSTA
-        removeUpperLimit = targetSTA
-
-        while t < len(TierR1):
-            print(t)
-            iLM_Next, t = find_NextDSRiffle(TierR1, t, targetSTA, targetElev)
-            print(t)
-
-            if iLM_Next != None:
-
-                list_Final.append(listAll[iLM_Next])
-                rCurrent = centerline.riffles[iLM_Next]
-                targetSTA = rCurrent.station + rCurrent.riffle_length + rCurrent.riffle_length
-                targetElev = rCurrent.pt.Z - rCurrent.riffle_drop
-                removeUpperLimit = targetSTA
-                print_RiffleInfo(rCurrent, iLM_Next)
-            else:
-                t = len(TierR1)
-
-        print("Lower Limit=", removeLowerLimit, '; Upper Limit=', removeUpperLimit)
-        
-        delete_Riffles(removeLowerLimit, removeUpperLimit)
-
-        #Loop Through
-        '''
-        Look upstream at next value distance down of riffle and pool length from last
-        If yes
-            #add to final list
-            #delete from tier
-        if no, set up loop to look in either direction by a specific amount
-        '''
-
-        #Reset i to original value from first Riffle
-        #get riffle/pool length of first riffle
-        rCurrent = centerline.riffles[iLM_Max]
-        targetSTA = rCurrent.station 
-        targetElev = rCurrent.pt.Z 
-        print("Looking Upstream")
-        t = iTier_Max
-        
-        removeUpperLimit = targetSTA 
-
-        while t > 0:
-            print(t)
-            iLM_Next, t = find_NextUSRiffle(TierR1, t, targetSTA, targetElev)
-            print(t)
-            
-            if iLM_Next != None:
-                list_Final.append(listAll[iLM_Next])
-                rCurrent = centerline.riffles[iLM_Next]
-                targetSTA = rCurrent.station 
-                targetElev = rCurrent.pt.Z
-                removeLowerLimit = targetSTA 
-                print_RiffleInfo(rCurrent, iLM_Next)
-            else:
-                t = 0          
-
-        # test +=1
+        if max_Suitability == None or max_Suitability <= 0:
+                continue
                 
-        print("Lower Limit=", removeLowerLimit, '; Upper Limit=', removeUpperLimit)
+        iSet = iMax
+        #COMMENTS:
+            #1. Find Max of Suitability Rating
+            #2. iMax: Index of riffle (centerline.riffles[] with the max value 
+
+
+        #STEP 2:
+        #TEST FITNESS
+        #---------------------
         
-        delete_Riffles(removeLowerLimit, removeUpperLimit)
+        #Get closest "placed" downstream riffle
+        iDS, gapDS = find_gapDS(centerline, iMax)
+        
+        #2a. Check if riifle/pool overlaps next DS riffle 
+        if iDS != None:
+            #Get Station of iDS, only if it returns a non-"None" value
+            iDS_STA = centerline.riffles[iDS].station
+            iMax_STA_poolEnd = centerline.riffles[iMax].pool.station_end
+
+            #if the next downstrean riffle is within the current riffle/pool length then go to next i
+            if iDS_STA < iMax_STA_poolEnd:
+                print('Next DS riffle within length of riffle/pool. Removed from consideration')
+                
+                #Set .use = 0
+                # print('iDS=', iDS, '; iMax =', iMax)
+                for i in range(iMax, iDS, 1):
+                    centerline.riffles[i].use = 0
+                continue
+            else:
+                print('No DS riffle within length of riffle/pool')
+        else:
+            print('No DS riffle')
 
 
-        print("----------")
-        print("TierR1, length=", len(TierR1))
-        #print(TierR1)
-        print("----------")
+        #2b. Find upstream (US) gaps
+        iUS, gapUS = find_gapUS(centerline, iMax) 
+            #Comment: Returns "None" for all values not found
 
-    print(TierR1)
+        # print("iUS=", iUS, "gapUS=", gapUS,"iDS=", iDS,"gapDS=", gapDS)
 
-    return list_Final
+        #2c. CHECK UPSTREAM TO SEE IF BETTER POINT
+        #THIS MAY LEAVE GAP
+        if iUS!= None and gapUS < gapTolerance:
+            #Is there a better solution upstream?
+            for i in range(iUS, iMax, 1):
+                if centerline.riffles[i].suitability > (centerline.riffles[iMax].suitability) * suitTol:
+                    iSet = i
 
-def maxList(l, v):
+
+        #2.c CHECK DOWNSTREAM IF THE RIFFLE/POOL WILL FIT
+        #AND IF IT NEEDS TO LENGTHEN IT BECAUSE DISTANCE < 20 FEET
+        #     check_Fitness(centerline, iUS, iMax) if iUS != None   
+        ###################################################
+        ######################SKIPPED######################
+        ###################################################
+
+        #     check_Fitness(centerline, iUS, iMax) if iDS !=None      
+
+
+
+            #-Check station of selected riffle relative to upstream and downstream riffle already placed
+            #-If within a certain distance, adjust upstream and downstream riffle and remove others from list
+
+
+
+
+        #COMMENTS:
+            #1. CHECK US AND DS TO SEE IF RIFFLE VALUE IS WITHIN A TOLERANCE (SAY 5% OF CURRENT VALUE)
+            #   > THIS MAY LEAD TO A BETTER FIT VALUE RELATVIE TO AN UPSTREAM OR DOWNSTREAM RIFFLE 
+
+
+
+        #STEP 3: SET ISET AS RIFFLE
+        #---------------------
+        print('iSet=', iSet)
+        centerline.riffles[iSet].use = 1
+        print('riffle start: ', centerline.riffles[iSet].station,'Riffle end: ', centerline.riffles[iSet].pool.station_end)
+
+        #Set Non-Riffles to 0
+        iSetUS = centerline.riffles[iSet].station
+        iSetDS = centerline.riffles[iSet].pool.station_end
+        for i in centerline.riffles:
+            if iSetUS < i.station < iSetDS:
+                if i.use == None:
+                    i.use = 0
+
+        #COMMENTS:
+            #1. Should we ever cut upstream pool short?
+
+        # print(centerline.riffles[iSet].use)
+
+
+
+        #STEP 4
+        #ADJUST RIFFLES TO PREVENT GAPS AS NEEDED
+        #---------------------
+
+        #COMMENTS:
+
+
+
+
+
+        #REPEAT STEPS 1 THROUGH 4 UNTIL DONE
+
+
+    return 
+
+def remove_endRiffles(cl):
+
+    for i in cl.riffles:
+        if i.pool.station_end > cl.riffles[len(cl.riffles)-1].station:
+            i.use = 0
+            print(i.station)
+    return
+
+
+def set_RiffleUse(cl, iSet):
+    #iSet: 
+
+
+    return
+
+def check_Fitness(cl, iUS, iDS, tol):
+
+    for i in range(iUS, iDS, 1):
+
+        #Compare Suitability
+        if cl.riffles[i].suitability > (1-tol) * cl.riffles[iDS].suitability:
+            
+            #Move selected riffle to new furthest upstream riffle within tolerance
+            return i
+
+
+    return 
+
+def find_gapUS(cl, iCurrent):
+    #cl:  centerline class
+    #iCurrent: index of current riffle  
+
+    print('find_GapsUS, iCurrent=', iCurrent)
+
+    for i in range(iCurrent-1, 0, -1):
+        # print('fg i=', i)
+        if cl.riffles[i].use == 0:
+            iUS = i
+            print('i=', i, ';icurrent=', iCurrent, ';STA_start=', cl.riffles[i].pool.station_end,  ';STA_end=', cl.riffles[iCurrent].station)
+            
+            #pool.station_end may be none, so set to .station_end
+            if cl.riffles[i].pool.station_end == None:
+                gapUS = cl.riffles[iCurrent].station - cl.end
+                print('iUS= ', iUS, ' ;gapUS= ', gapUS)
+                return iUS, gapUS
+            else:    
+                gapUS = cl.riffles[iCurrent].station - cl.riffles[i].pool.station_end
+                print('iUS= ', iUS, ' ;gapUS= ', gapUS)
+                return iUS, gapUS
+
+    return None, None
+
+
+def find_gapDS(cl, iCurrent):
+    #cl:  centerline class
+    #iCurrent: index of current riffle  
+    
+    print('find_GapsDS, iCurrent=', iCurrent)
+    
+    for i in range(iCurrent + 1, len(cl.riffles), 1):
+        if cl.riffles[i].use == 1:
+            iDS = i
+            gapDS = cl.riffles[i].station - cl.riffles[iCurrent].pool.station_end
+            print('iDS= ', iDS, ' ;gapDS= ', gapDS)
+            return iDS, gapDS
+
+    return None, None
+
+def maxSuitability(cl):
     #l =  list of variables
     #v = index of variable looking for 
+    iMax = None
     max_val = None
     num = None
+    max_suitability = None
 
-    for i in range(len(l)):
-        if l[i][v] > max_val:
-            max_val = l[i][v]
-            max_idx = l[i][0]           #l[i][0] = index of list, which equals index of riffles
-            num = i
-
-    return max_idx, num
-
-def minList(l, v):
-    #l =  list of variables
-    #v = variable looking for 
-    min_val = None
-    num = None
-
-    for i in range(len(l)):
-        if l[i][v] < min_val:
-            min_val = l[i][v]
-            min_idx = l[i][0]
-            num = i
-    return min_idx, min_val, numi
+    for i in cl.riffles:
+        #print('Use:', i.use)
+        if i.use == None:
+            #print('iUSE')
+            if i.suitability > max_suitability:
+                #print('T3')
+                max_suitability = i.suitability
+                iMax = i.index                      #???This could probably ust be =i
+    print('max=', max_suitability, 'iMax=', iMax, 'i', i)
+    return iMax, max_suitability
 
 def nearestList(l, v, value):
     #l =  list of variables
@@ -243,152 +265,51 @@ def nearestList(l, v, value):
 
     return near_idx, near_val, numi
 
-def find_NextDSRiffle(l, t, targetSTA, targetElev):
-    #targetSTA = station of end of pool based on station of current riffle, length
-    #            of riffle, and length of pool
-    #targetElev = Elevation of current riffle - drop of current riffle
 
-    print('target:', targetSTA, targetElev)
-    for i in range(t, len(l)):
-        rNext = l[i]
-
-        print(rNext[1], rNext[13])
-
-        #Check length from previous
-        if rNext[1] >= targetSTA: 
-            #Check that invert is within 0.1ft of target invert
-            if abs(rNext[13]-targetElev) < 0.1:
-                index = rNext[0]
-                return index, i
-    return None, i
-
-def find_NextUSRiffle(l, t, targetSTA, targetElev):
-    #targetSTA = Station of current Riffle
-    #targetElev = Elevation of current riffle
-
-    print('t = ', t)
-    print('target:', targetSTA, targetElev)
-
-    #Loop Through upstream Riffles
-    for i in range(t-1, 0, -1):       #could try reversed(range()), may be faster
-        
-        #gets next US Riffle
-        rNext = l[i]
-
-        #Consider just making this a variable of the riffle (targetSTA)
-        #rNext_EndStation = rSTA + rL + pL
-        rNext_EndStation = rNext[1] + rNext[8] + rNext[8] 
-        
-        #rNext_EndElev = Elevation - Drop
-        rNext_EndElev = rNext[13] - rNext[10]
-
-        print(rNext[1], rNext[13], rNext[10], rNext_EndStation, rNext_EndElev)
-
-        #End of Pool for US Riffle needs to be before targetSTA
-        if rNext_EndStation <= targetSTA: 
-            #Check that invert is within 0.1ft of target invert
-            if abs(rNext_EndElev-targetElev) <= 0.1:
-                index = rNext[0]
-                return index, i
-    return None, None
-
-def delete_Riffles(iLower, iUpper):
-    #iLower, iUpper are Stations within Tier classes
-
-    print("----------")
-    print("Delete Riffles")
-    print("Total Count=", len(listVariables), 'Final Station=', listVariables[-1][1])
-    print('R1 Count=', len(TierR1))
-
-    #Tried to make a separate function but it didn't work. Should come back to it.
-    i=0
-    while i < len(TierR1):
-        print("----------")
-        print(len(TierR1))
-        print('i=', i)
-        print(TierR1[i][1])
-        if iLower <= TierR1[i][1] < iUpper:
-            print('Delete:',TierR1[i][1], TierR1[i][0], TierR1[i])
-            TierR1.remove(TierR1[i])                #
-            print(len(TierR1))
-            print('i=', i)
-        else:
-            i += 1
-
-    i = 0
-    while i < len(TierR2):
-        print("----------")
-        print(len(TierR2))
-        print('i=', i)
-        print(TierR2[i][1])
-        if iLower <= TierR2[i][1] < iUpper:
-            print('Delete:',TierR2[i][1], TierR2[i][0], TierR2[i])
-            TierR2.remove(TierR2[i])                
-            print(len(TierR2))
-            print('i=', i)
-        else:
-            i += 1
-    i = 0
-    while i < len(TierR3):
-        print("----------")
-        print(len(TierR3))
-        print('i=', i)
-        print(TierR3[i][1])
-        if iLower <= TierR3[i][1] < iUpper:
-            print('Delete:',TierR3[i][1], TierR3[i][0], TierR3[i])
-            TierR3.remove(TierR3[i])                
-            print(len(TierR3))
-            print('i=', i)
-        else:
-            i += 1
-
-    print('R1 Count=', len(TierR1))
-    print("End Delete Riffles")
-    print("----------")
-    return
 
 def print_RiffleInfo(l, i):
     print("----------")
     print("index = ", i)
     print("Station = ", l.station)
     print("Invert Elev = ", l.pt.Z)
-    print("Riffle Drop = ", l.riffle_drop)
-    print("Riffle Length = ", l.riffle_length)
+    print("Riffle Drop = ", l.riffle.drop)
+    print("Riffle Length = ", l.riffle.length)
     print("Radius of Curvature = ", l.bend_ratio2)
     return
 
-def sort_list(l):
+
+
+#___________________________________________________________________________
+#STEP 0: RESET USES
+#___________________________________________________________________________
+print('STEP 0---------------')
+for i in crvRifflePoints.riffles:
+   i.use = None
+
+print('# of Stream Points =', len(crvRifflePoints.riffles))
+
+for i in crvRifflePoints.riffles:
+    print(i.suitability)
+    
+#___________________________________________________________________________
+#STEP 1: CALCULATE STREAM POINT SUITABILITIES
+#Adjust the riffles.suitability values for each stream points
+#___________________________________________________________________________
+print('STEP 1---------------')
+calculate_Suitability(crvRifflePoints)
+#Print Suitability Here*********************************
+
+#___________________________________________________________________________
+#STEP 2: PLACE RIFFLES
+#Place Riffles
+#___________________________________________________________________________
+print('STEP 2---------------')
+place_Riffles(crvRifflePoints)
 
 
 
-    return l
-
-listMaster = get_VariableArray(crvRifflePoints)
-
-get_RiffleTiers(listMaster)
-
-listFinal = place_Riffles(crvRifflePoints, listMaster)
-
-listFinalSorted = sorted(listFinal, key=itemgetter(1))
-
-Riffles = []
-
-for i in listFinalSorted:
-    Riffles.append(crvRifflePoints.riffles[i[0]])
+print('DONE---------------')
+for i in crvRifflePoints.riffles:
+    print('i=', i.index, '; Use =', i.use)
 
 
-
-
-# print("TierR1")
-# print(TierR1)
-# print("TierR2")
-# print(TierR2)
-# print("TierR3")
-# print(TierR3)
-# print("TierP1")
-# print(TierP1)
-# print("TierNull")
-# print(TierNull)  
-
-#Riffles = suitability(crvRifflePoints)
-# print(Riffles)

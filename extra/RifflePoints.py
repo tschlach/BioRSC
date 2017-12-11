@@ -33,7 +33,7 @@ class Centerline(object):
         #?????Should we do this after the getIdealRiffleDesign so that we can vary the window
         #?????based on the ideal riffle length? Answer: No. Ideal Riffle Design Requires Valley Slope.
         self.getSlopes(2,5)                #(,X) X is important and factors into variances alot. Need to not hard code in.
-        self.getIdealRiffleDesign(.5, 10)
+        self.getIdealRiffleDesign(.5, 10, crvCenterline)
         self.getBendRatios(5)
         self.getBendRatios2(5)
 
@@ -58,51 +58,83 @@ class Centerline(object):
         #     print(self.riffles[i].ptBankLeft)
         #     print("----------")
         
-    def getIdealRiffleDesign(self, riffle_drop_min, riffle_length_min): ##need an additional variable - that is able to be reset
-        for i in self.riffles[0:160]:
+    def getIdealRiffleDesign(self, riffle_drop_min, riffle_length_min, cl): 
+        ##need an additional variable - that is able to be reset
+
+        points = []
+        interval = 1
+
+        #split curve into 0.1 increments to be sampled
+        points = rs.DivideCurveLength(cl, interval, True, True)
+
+        #Calculate Ideal riffle design for each stream point
+        for i in self.riffles:
             check = False
             count = 0
-            riffle_drop_test = riffle_drop_min
-            riffle_length_test = riffle_length_min
-            while check == False and count < 35:
-                if i.valley_slope == 0: 
-                    pool_length = 10000
-                else:  
-                    pool_length = abs((riffle_drop_test / i.valley_slope) - riffle_length_test)
+            riffle_drop = riffle_drop_min       #Initial drop test
+            riffle_length = riffle_length_min   #Initial length test
+            
 
-                print('STA=', i.station, '; Valley Slope=', i.valley_slope, '; PL=', pool_length, '; rLt=', riffle_length_test, '; rDt=', riffle_drop_test)
-                if pool_length >= riffle_length_test:
-                    i.riffle_length = riffle_length_test
-                    i.riffle_drop = riffle_drop_test
-                    i.riffle_slope = riffle_drop_test / riffle_length_test
+            #loop through sizing scenarios
+            while check == False and count < 35:
+                
+                length = None
+                rUSInvert = i.pt.Z
+                rDSInvert = rUSInvert - riffle_drop
+                pool_station_start = i.station + riffle_length
+
+                #Calc Pool length by when it gets to next point on centerline at same elevation
+                #Get index for starting point
+                iStartPoint = int(round(i.station, 1) / interval)
+
+                print('Find Elevation', iStartPoint, len(points), rDSInvert)
+                
+                for j in range(iStartPoint, len(points)):
+                    if points[j].Z < rDSInvert:
+                        pool_length = (j-1) * interval - pool_station_start
+                        pt = points[j]
+                        print(pt)
+                        print (j, pool_length, i.station, pool_station_start, points[j].Z)
+                        break
+
+
+                if pool_length >= 1.5 * riffle_length:
                     i.geometry = "Riffle"
+                    i.riffle.length = riffle_length
+                    i.riffle.drop = riffle_drop
+                    i.riffle.slope = riffle_drop / riffle_length
+                    i.riffle.station_end = i.station + i.riffle.length
+                    
+                    i.pool.length = pool_length
+                    i.pool.station_start = i.riffle.station_end
+                    i.pool.station_end = i.station + i.riffle.length + i.pool.length
                     check = True
                 else:
-                    if riffle_length_test < 30:
-                        riffle_length_test += 5
+                    if riffle_length < 30:
+                        riffle_length += 5
                         count +=1
-                    elif riffle_drop_test < 2:
-                        riffle_length_test = riffle_length_min
-                        riffle_drop_test += 0.25
+                    elif riffle_drop < 2:
+                        riffle_length = riffle_length_min
+                        riffle_drop += 0.25
                         count +=1
                     else:
                         i.geometry = "Neither"
                         check = True
+                    #!!!NEED TO ADD IN CASCADE
         return
+
 
     def createRiffles(self, lenDivision):
         for i in range(len(self.points)):
             station = i * lenDivision
-            self.riffles.append(RifflePoint(self.points[i], self.Thalweg, self.BankRight, self.BankLeft, station, lenDivision))
+            self.riffles.append(StreamPoint(self.points[i], self.Thalweg, self.BankRight, self.BankLeft, station, lenDivision))
         return
     
-
     def getBendRatios2(self, t):
         for i in range(len(self.riffles)-t):
             self.riffles[i].bend_ratio2 = rs.CurveCurvature(self.Thalweg, self.riffles[i].parameter)[3]
         return
         
-
     def getBendRatios(self, t):
         array_bend_ratio = []
 
@@ -128,35 +160,34 @@ class Centerline(object):
             new_bend_ratio = (n - old_min) / old_range * new_range + new_min
             self.riffles[i].bend_ratio = new_bend_ratio
         return
-
-
-      
+    
     #getSlopes defines the *discrete* slopes of the line, based on the straight distance between points on the line
     def getSlopes(self, winChannel, winValley):
         
         #Channel Slope
-        for i in range(len(self.riffles) - winChannel):
+        for i in range(len(self.riffles)):
             t1 = min([i, winChannel])
-            t2 = min([len(self.riffles)-i, winChannel])
+            t2 = min([len(self.riffles)-i-1, winChannel])
             sta1 = self.riffles[i - t1].station
             sta2 = self.riffles[i + t2].station
             pt1_z = self.riffles[i - t1].pt.Z
             pt2_z = self.riffles[i + t2].pt.Z
             self.riffles[i].channel_slope = (pt1_z - pt2_z)/(sta1 - sta2)
+                   
 
         #Valley Slope
-        for i in range(len(self.riffles) - winValley):
+        for i in range(len(self.riffles)): 
             t1 = min([i, winValley])
-            t2 = min([len(self.riffles)-i, winValley])
+            t2 = min([len(self.riffles)-i-1, winValley])
             sta1 = self.riffles[i - t1].station
             sta2 = self.riffles[i + t2].station
             pt1_z = self.riffles[i - t1].elevBankLow
             pt2_z = self.riffles[i + t2].elevBankLow
-            self.riffles[i].valley_slope = (pt1_z - pt2_z)/(sta1 - sta2)          
+            self.riffles[i].valley_slope = (pt1_z - pt2_z)/(sta1 - sta2)
         return
 
 
-class RifflePoint(object):
+class StreamPoint(object):
     """docstring for ClassName"""
     #Notes to think about:
     # -Does difference in left/right bank elevation matter in design?
@@ -172,7 +203,9 @@ class RifflePoint(object):
         self.station = station
         self.bend_ratio = None
         self.bend_ratio2 = None
-        self.index = self.station/lenDivision
+        self.index = int(self.station/lenDivision)
+        self.suitability = 0
+        self.use = None                    #1 = Riffle, 0 = Don't Use, -1 = Pool (pool points not usedd for now)
 
         #Bank Information
         self.ptBankRight = rs.EvaluateCurve(crvBankRight, rs.CurveClosestPoint(crvBankRight, self.pt))
@@ -184,21 +217,45 @@ class RifflePoint(object):
         self.valley_slope = None
 
         #Proposed Riffle Design Information
-        self.riffle_length = None
-        self.riffle_slope = None
-        self.riffle_drop = None
-        self.riffle_width = None     #Calc based on Bank Width
+        self.riffle = RifflePoint()
+        self.pool = PoolPoint()
         self.geometry = None
-
-               
+        
         #project Thalweg to Horizontal Plane
-        crvCenterlineHoriz = crvCenterline
+        crvCenterlineHoriz = rs.CopyObject(crvCenterline)
         rs.ScaleObject(crvCenterlineHoriz, (0,0,0), (1,1,0))
         self.parameterHorizontal = rs.CurveClosestPoint(crvCenterlineHoriz, point)
+ 
+class RifflePoint(object):
+    
+    def __init__(self):
+        #Proposed Riffle Design Information
+        self.length = None
+        self.slope = None
+        self.drop = None
+        self.width = None     #Calc based on Bank Width
+        self.depth = None
+        self.station_start = None 
+        self.station_end = None
+    
+class PoolPoint(object):
+
+    def __init__(self):
+        #Proposed Riffle Design Information
+        self.length = None
+        self.slope = None
+        self.drop = None
+        self.width = None     #Calc based on Bank Width
+        self.station_start = None
+        self.station_end = None
+               
+
 
 def horizontal_distance(pt1, pt2):
     distance = math.sqrt(math.pow(pt2.X - pt1.X, 2) + math.pow(pt2.Y - pt1.Y, 2)) 
     return distance
+
+
 
 #x is set as curve in centerline class
 crvRifflePoints = Centerline(crvThalweg, crvRightBank, crvLeftBank, interval)
