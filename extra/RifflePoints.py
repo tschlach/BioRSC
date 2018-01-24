@@ -73,6 +73,7 @@ class Centerline(object):
             count = 0
             riffle_drop = riffle_drop_min       #Initial drop test
             riffle_length = riffle_length_min   #Initial length test
+
             
 
             #loop through sizing scenarios
@@ -83,24 +84,33 @@ class Centerline(object):
                 rDSInvert = rUSInvert - riffle_drop
                 pool_station_start = i.station + riffle_length
 
+                #Check that rDSInvert is not lower than thalweg endpoint
+                if rDSInvert < self.end.Z:
+                    i.use = 0
+                    print(j, "should stop here")
+                    break
+                
                 #Calc Pool length by when it gets to next point on centerline at same elevation
                 #Get index for starting point
                 iStartPoint = int(round(i.station, 1) / interval)
 
-                print('Find Elevation', iStartPoint, len(points), rDSInvert)
+                print('Find Elevation', iStartPoint, len(points), rUSInvert, rDSInvert, self.end.Z)
                 
+                #Find Downstream point j where rDSInvert is lower than channel
                 for j in range(iStartPoint, len(points)):
-                    if points[j].Z < rDSInvert:
+                    if points[j].Z <= rDSInvert:
                         pool_length = (j-1) * interval - pool_station_start
                         pt = points[j]
                         print(pt)
                         print (j, pool_length, i.station, pool_station_start, points[j].Z)
-                        break
+                        break   #breaks the "for" loop
 
-
+                #Changes 
                 if pool_length >= 1.5 * riffle_length:
                     i.geometry = "Riffle"
                     i.riffle.length = riffle_length
+                    i.riffle.length_max = riffle_length
+                    i.riffle.length_min = 1.5 * riffle_length
                     i.riffle.drop = riffle_drop
                     i.riffle.slope = riffle_drop / riffle_length
                     i.riffle.station_end = i.station + i.riffle.length
@@ -243,6 +253,8 @@ class PoolPoint(object):
     def __init__(self):
         #Proposed Riffle Design Information
         self.length = None
+        self.length_min = None
+        self.length_max = None
         self.slope = None
         self.drop = None
         self.width = None     #Calc based on Bank Width

@@ -69,10 +69,20 @@ def place_Riffles(centerline):
         if iDS != None:
             #Get Station of iDS, only if it returns a non-"None" value
             iDS_STA = centerline.riffles[iDS].station
-            iMax_STA_poolEnd = centerline.riffles[iMax].pool.station_end
+            pool_length = centerline.riffles[iMax].pool.length_max
+            iMax_STA_poolEnd = centerline.riffles[iMax].pool.station_start + pool_length 
 
             #if the next downstrean riffle is within the current riffle/pool length then go to next i
             if iDS_STA < iMax_STA_poolEnd:
+                
+                #CHECK NEXT US STREAM POINT IS WIHTIN SUIT TOLERANCE (ORGINAL)
+                    #YES - MOVE TO NEXT US STREAM POINT, START OVER 
+                    #NO - CHECK IF NEXT DS RIFFLE POINT IS WITHIN POOL MIN
+                        #YES - SET RIFFLE/POOL AS 0
+                        #NO - SET RIFFLE AS 1, POOL LENGTH = NEXT DS RIFFLE POINT AND 0s
+
+
+
                 print('Next DS riffle within length of riffle/pool. Removed from consideration')
                 
                 #Set .use = 0
@@ -82,6 +92,12 @@ def place_Riffles(centerline):
                 continue
             else:
                 print('No DS riffle within length of riffle/pool')
+
+                #CHECK IF pool.station_end - riffle[next ds].station < lenDivision
+                    #YES - SET RIFFLE AS 1, POOL AS 0
+                    #NO - IS NEXT DS STREAM POINT WITHIN SUIT TOLERANCE (ORIGINAL)
+                        #NO - SET ORIGINAL RIFFLE = 1, POOLS = 0
+                        #YES - MOVE TO NEXT DS STREAM POINT, START OVER
         else:
             print('No DS riffle')
 
