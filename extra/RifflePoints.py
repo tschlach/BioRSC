@@ -87,22 +87,26 @@ class Centerline(object):
                 #Check that rDSInvert is not lower than thalweg endpoint
                 if rDSInvert < self.end.Z:
                     i.use = 0
-                    print(j, "should stop here")
-                    break
+                    #print(i.station, "Lower than end point")
+                    break   #breaks the "While" Loop
                 
+
                 #Calc Pool length by when it gets to next point on centerline at same elevation
                 #Get index for starting point
                 iStartPoint = int(round(i.station, 1) / interval)
 
-                print('Find Elevation', iStartPoint, len(points), rUSInvert, rDSInvert, self.end.Z)
+                #print('Find Elevation', iStartPoint, len(points), rUSInvert, rDSInvert, self.end.Z)
                 
-                #Find Downstream point j where rDSInvert is lower than channel
+                #Find Downstream point j where rDSInvert is higher than channel
+                #this means that the interval has to be low enough to catch an approximate elevation
+                #where the pool will meet the channel
+                #?Can this be changed to automatically find the point at that elevation beyond a certain length?
                 for j in range(iStartPoint, len(points)):
                     if points[j].Z <= rDSInvert:
                         pool_length = (j-1) * interval - pool_station_start
                         pt = points[j]
-                        print(pt)
-                        print (j, pool_length, i.station, pool_station_start, points[j].Z)
+                        #print(pt)
+                        #print (j, pool_length, i.station, pool_station_start, points[j].Z)
                         break   #breaks the "for" loop
 
                 #Changes 
@@ -140,11 +144,16 @@ class Centerline(object):
             self.riffles.append(StreamPoint(self.points[i], self.Thalweg, self.BankRight, self.BankLeft, station, lenDivision))
         return
     
+
     def getBendRatios2(self, t):
-        for i in range(len(self.riffles)-t):
+        for i in range(1 , len(self.riffles)):#-t): ?Don't think we need to subtract last "t" as with getBendRatios
+            print(self.riffles[i].station, self.riffles[i].parameter, self.riffles[i].bend_ratio2)
+            print(self.Thalweg)
             self.riffles[i].bend_ratio2 = rs.CurveCurvature(self.Thalweg, self.riffles[i].parameter)[3]
+            print(self.riffles[i].bend_ratio2)
         return
         
+
     def getBendRatios(self, t):
         array_bend_ratio = []
 
@@ -169,8 +178,10 @@ class Centerline(object):
             n = self.riffles[i].bend_ratio
             new_bend_ratio = (n - old_min) / old_range * new_range + new_min
             self.riffles[i].bend_ratio = new_bend_ratio
+
         return
     
+
     #getSlopes defines the *discrete* slopes of the line, based on the straight distance between points on the line
     def getSlopes(self, winChannel, winValley):
         
@@ -236,6 +247,7 @@ class StreamPoint(object):
         rs.ScaleObject(crvCenterlineHoriz, (0,0,0), (1,1,0))
         self.parameterHorizontal = rs.CurveClosestPoint(crvCenterlineHoriz, point)
  
+
 class RifflePoint(object):
     
     def __init__(self):
@@ -248,6 +260,7 @@ class RifflePoint(object):
         self.station_start = None 
         self.station_end = None
     
+
 class PoolPoint(object):
 
     def __init__(self):
