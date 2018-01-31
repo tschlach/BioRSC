@@ -6,7 +6,7 @@ import math
 def getValue(crvRifflePoints):
     for i in crvRifflePoints.riffles:
         if getattr(i, attr) != None:
-        	a.append(i.pt)
+        	a.append(i.ptBankMin)
         	b.append(getattr(i, attr))
     return
 
