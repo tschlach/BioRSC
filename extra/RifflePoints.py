@@ -111,7 +111,7 @@ class Centerline(object):
         crvBL = self.BankLeft2D
 
         points = []
-        interval = 1
+        interval = 0.2 * self.lenDivision
 
         #split curve into 0.1 increments to be sampled
         points2D = rs.DivideCurveLength(cl, interval, True, True)
@@ -130,6 +130,9 @@ class Centerline(object):
             elevBankLow = min(ptBR.Z, ptBL.Z)
             points.append(rs.coerce3dpoint((i.X, i.Y, elevBankLow)))
             
+
+
+            
         #Calculate Ideal riffle design for each stream point
         for i in self.riffles:
             
@@ -142,11 +145,12 @@ class Centerline(object):
             print("************************")
             print("New Riffle", i.station, len(points), round(self.end.Z,2))
 
+
             #loop through sizing scenarios
             while check == False and count < 35:
                 
                 #Set initial Values
-                #length = None
+                i.riffle.pt_start = i.ptBankMin
                 rUSInvert = i.ptBankMin.Z
                 rDSInvert = rUSInvert - riffle_drop
                 pool_station_start = i.station + riffle_length
@@ -168,10 +172,6 @@ class Centerline(object):
                 print("X: ", round(i.ptBankMin.X, 2),"Y: ", round(i.ptBankMin.Y, 2), "Z: ", round(i.ptBankMin.Z, 2))
                 print("Start Point: ", iStartPoint)
                 print("X: ", round(points[int(i.station / interval)].X, 2),"Y: ", round(points[int(i.station / interval)].Y, 2), "Z: ", round(points[int(i.station / interval)].Z, 2))
-
-                #i.pt = Bank Elevation
-
-
 
 
                 #Find Downstream point j where rDSInvert is higher than channel
@@ -283,10 +283,11 @@ class StreamPoint(object):
         self.ptBankRight = None 
         self.ptBankLeft = None 
         self.elevBankLow = None
+        self.ptBankMin = None
         self.bank_width = None
         self.BankRightIncision = None
         self.BankLeftIncision = None
-        self.ptBankMin = None
+        self.incision = None
 
         #Use
         self.suitability = 0
@@ -312,6 +313,8 @@ class RifflePoint(object):
         self.depth = None
         self.station_start = None 
         self.station_end = None
+        self.pt_start = None
+        self.pt_end= None
     
 class PoolPoint(object):
 
@@ -325,6 +328,8 @@ class PoolPoint(object):
         self.width = None     #Calc based on Bank Width
         self.station_start = None
         self.station_end = None
+        self.pt_start = None
+        self.pt_end= None
                
 def horizontal_distance(pt1, pt2):
     distance = math.sqrt(math.pow(pt2.X - pt1.X, 2) + math.pow(pt2.Y - pt1.Y, 2)) 

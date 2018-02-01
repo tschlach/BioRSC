@@ -24,15 +24,15 @@ for i in ctrlnStream.riffles:
 		if i.riffle.width == None: i.riffle.width = 10
 		
 		#Riffle Right Point at start of Riffle
-		pointRight = rs.AddPoint(i.pt.X + i.riffle.width / 2 * -i.tangent[1], i.pt.Y + i.riffle.width / 2 * i.tangent[0], i.pt.Z)
+		pointRight = rs.AddPoint(i.ptBankMin.X + i.riffle.width / 2 * -i.tangent[1], i.ptBankMin.Y + i.riffle.width / 2 * i.tangent[0], i.ptBankMin.Z)
 		riffleRight.append(pointRight)
 		
 		#Riffle Left Point at start of Riffle
-		pointLeft = rs.AddPoint(i.pt.X + i.riffle.width / 2 * i.tangent[1], i.pt.Y + i.riffle.width / 2 * -i.tangent[0], i.pt.Z)
+		pointLeft = rs.AddPoint(i.ptBankMin.X + i.riffle.width / 2 * i.tangent[1], i.ptBankMin.Y + i.riffle.width / 2 * -i.tangent[0], i.ptBankMin.Z)
 		riffleLeft.append(pointLeft)
 		
 		#Riffle End point at end of riffle
-		pointEnd = rs.AddPoint(i.pt.X + i.riffle.length * i.tangent[0], i.pt.Y + i.riffle.length * i.tangent[1], i.pt.Z)
+		pointEnd = rs.AddPoint(i.ptBankMin.X + i.riffle.length * i.tangent[0], i.ptBankMin.Y + i.riffle.length * i.tangent[1], i.ptBankMin.Z)
 		riffleEnd.append(pointEnd)
 		print(i.riffle.width)
 	   
@@ -61,5 +61,5 @@ for i in ctrlnStream.riffles:
 		ptPoolMid = rs.AddPoint(ptStationMid.X + i.riffle.width / 2 * tangent[1], ptStationMid.Y + i.riffle.width / 2 * -tangent[0], ptStationMid.Z)
 		poolMidRight.append(ptPoolMid)
 
-		string = 'STA:', i.station, 'invert:', round(i.pt.Z, 1), '; Riffle Length:', i.riffle.length, '; Riffle Drop:', i.riffle.drop, '; Pool Length:', round(i.pool.length, 1)
+		string = 'STA:', i.station, 'invert:', round(i.ptBankMin.Z, 1), '; Riffle Length:', i.riffle.length, '; Riffle Drop:', i.riffle.drop, '; Pool Length:', round(i.pool.length, 1)
 		text.append(string)

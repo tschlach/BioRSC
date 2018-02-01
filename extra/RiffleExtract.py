@@ -11,7 +11,7 @@ tangents = []
 
 for i in crvRifflePoints.riffles:
    if i.use == 1:
-	   points.append(i.pt)
+	   points.append(i.ptBankMin)
 	   paramaters.append(i.parameter)
 	   lengths.append(i.riffle.length)
 	   drops.append(i.riffle.drop)
