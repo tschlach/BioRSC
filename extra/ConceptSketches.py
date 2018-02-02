@@ -55,7 +55,7 @@ for i in ctrlnStream.riffles:
 		poolMidLeft.append(ptPoolMid)
 
 		#pool Mid Right
-		ptPoolMid = rs.AddPoint(ptStationMid.X + i.riffle.width / 2 * tangent[1], ptStationMid.Y + i.riffle.width / 2 * -tangent[0], ptStationMid.Z)
+		ptPoolMid = rs.AddPoint(ptStationMid.X + i.riffle.width / 2 * tangent[1], ptStationMid.Y + i.riffle.width / 2 * -tangent[0], i.pool.pt_start.Z)
 		poolMidRight.append(ptPoolMid)
 
 		string = 'STA:', i.station, 'invert:', round(i.ptBankMin.Z, 1), '; Riffle Length:', i.riffle.length, '; Riffle Drop:', i.riffle.drop, '; Pool Length:', round(i.pool.length, 1)
