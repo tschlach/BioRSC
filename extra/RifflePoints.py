@@ -133,6 +133,7 @@ class Centerline(object):
             
         for i in self.riffles:
             i.riffle.pt_start = i.ptBankMin
+            i.riffle.width = i.bank_width
 
 
         #Calculate Ideal riffle design for each stream point
@@ -203,6 +204,7 @@ class Centerline(object):
                     i.pool.index = int(i.riffle.station_end/self.lenDivision)
                     rEnd = self.riffles[i.pool.index]
                     i.riffle.pt_end = rs.coerce3dpoint((rEnd.riffle.pt_start.X, rEnd.riffle.pt_start.Y, rDSInvert))
+                    i.riffle.tangent_end = 
                     i.pool.pt_start = i.riffle.pt_end
 
                     #Break
@@ -275,8 +277,8 @@ class StreamPoint(object):
         self.station = index * lenDivision
         
         #Thalweg2D Information 
-        self.parameter = rs.CurveClosestPoint(crvCenterline, point)     #Parameter (t) for point on centerline
-        self.tangent = rs.CurveTangent(crvCenterline, self.parameter)
+        self.parameter = rs.CurveClosestPoint(crvCenterline, point)     #2D Parameter (t) for point on centerline
+        self.tangent = rs.CurveTangent(crvCenterline, self.parameter)   #2D Tangent
         self.slopeAtPoint = self.tangent[2] #??This won't work anymore with flat thalweg
         self.bend_ratio = None
         self.curvature = None
@@ -328,6 +330,7 @@ class RifflePoint(object):
         self.station_end = None
         self.pt_start = None
         self.pt_end= None
+        self.tangent_end = None
     
 class PoolPoint(object):
 
@@ -344,6 +347,8 @@ class PoolPoint(object):
         self.station_end = None
         self.pt_start = None
         self.pt_end= None
+        self.tangent_start = None
+        self.tangent_end = None
          
 def getPointFromMesh_Bank(cl, crvBank, station, mesh):
     
