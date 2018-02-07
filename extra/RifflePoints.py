@@ -203,9 +203,13 @@ class Centerline(object):
                     i.riffle.station_end = i.station + i.riffle.length
                     i.pool.index = int(i.riffle.station_end/self.lenDivision)
                     rEnd = self.riffles[i.pool.index]
+                    pEnd = self.riffles[int(i.pool.station_end/self.lenDivision)]
+                    i.riffle.tangent_end = rEnd.tangent
+                    i.pool.tangent_start = rEnd.tangent
+                    i.pool.tangent_end = pEnd.tangent
                     i.riffle.pt_end = rs.coerce3dpoint((rEnd.riffle.pt_start.X, rEnd.riffle.pt_start.Y, rDSInvert))
-                    i.riffle.tangent_end = 
-                    i.pool.pt_start = i.riffle.pt_end
+                    i.pool.pt_start = i.riffle.pt_end  
+
 
                     #Break
                     break
@@ -236,6 +240,14 @@ class Centerline(object):
             print(self.Thalweg2D)
             self.riffles[i].curvature = rs.CurveCurvature(self.Thalweg2D, self.riffles[i].parameter)[3]
             print(self.riffles[i].curvature)
+
+        for i in range(1 , len(self.riffles)-10):
+            curvature  = 0
+            count = 0   
+            for j in range(i, i + 10):
+                curvature += self.riffles[j].curvature
+                count += 1
+            self.riffles[i].curvature = curvature / count
         return
         
     def getBendRatios(self, t):
