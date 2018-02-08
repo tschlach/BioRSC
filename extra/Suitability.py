@@ -2,7 +2,6 @@ import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
 import math 
 from operator import itemgetter
-from copy import deepcopy 
 
 #import numpy as np     #Doesnt' work for IronPython. Need to download stuff... Look at this link: 
         #https://stevebaer.wordpress.com/2011/06/27/numpy-and-scipy-in-rhinopython/
@@ -22,7 +21,6 @@ def calculate_Suitability(centerline):
         else:
             i.suitability = 0
 
-        print(i.geometry, i.curvature)
     return 
 
 
@@ -33,11 +31,21 @@ print('STEP 0---------------')
 for i in crvRifflePoints.riffles:
    i.suitability = None
 
-print('# of Stream Points =', len(crvRifflePoints.riffles))
+# print('# of Stream Points =', len(crvRifflePoints.riffles))
 
 for i in crvRifflePoints.riffles:
-    print(i.suitability)
+    print(i.geometry, i.suitability)
+
+
     
+#___________________________________________________________________________
+#STEP 1: GET WEIGHTING
+#___________________________________________________________________________
+# print(Weights)
+
+
+
+
 #___________________________________________________________________________
 #STEP 1: CALCULATE STREAM POINT SUITABILITIES
 #Adjust the riffles.suitability values for each stream points
@@ -47,6 +55,6 @@ calculate_Suitability(crvRifflePoints)
 #Print Suitability Here*********************************
 
 for i in crvRifflePoints.riffles:
-    print(i.suitability)
+    print(i.geometry, i.suitability)
 
 
