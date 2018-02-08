@@ -1,0 +1,483 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"pool",
+				"pool_length"
+			],
+			[
+				"length",
+				"length_min"
+			],
+			[
+				"riffle",
+				"riffle_length"
+			],
+			[
+				"crvCe",
+				"crvCenterline"
+			],
+			[
+				"crvCenterline",
+				"crvCenterlineHoriz"
+			],
+			[
+				"riffe",
+				"riffle_drop"
+			],
+			[
+				"win",
+				"winChannel"
+			],
+			[
+				"chann",
+				"channel_slope"
+			],
+			[
+				"station",
+				"station"
+			],
+			[
+				"end",
+				"station_end"
+			],
+			[
+				"len",
+				"length"
+			],
+			[
+				"max_",
+				"max_suitability"
+			],
+			[
+				"suit",
+				"suitTol"
+			],
+			[
+				"place",
+				"place_Riffles"
+			],
+			[
+				"gap",
+				"gapTolerance"
+			],
+			[
+				"stat",
+				"station_end"
+			],
+			[
+				"find",
+				"find_NearestRiffles"
+			],
+			[
+				"maxSuita",
+				"max_suitability"
+			],
+			[
+				"max",
+				"max_suitability"
+			],
+			[
+				"ri",
+				"riffles"
+			],
+			[
+				"crv",
+				"crvFINAL"
+			],
+			[
+				"riffl",
+				"RifflePoint"
+			],
+			[
+				"list",
+				"listFinal"
+			],
+			[
+				"iLM",
+				"iLM_Max"
+			],
+			[
+				"il",
+				"iLM_Max"
+			],
+			[
+				"list2D",
+				"list2D_values"
+			],
+			[
+				"remo",
+				"removeLowerLimit"
+			],
+			[
+				"ta",
+				"targetSTA"
+			],
+			[
+				"va",
+				"valley_slope"
+			],
+			[
+				"po",
+				"pool_length"
+			],
+			[
+				"inde",
+				"index1"
+			],
+			[
+				"bend",
+				"bend_ratio2"
+			],
+			[
+				"print",
+				"print_RiffleInfo"
+			],
+			[
+				"delete_",
+				"delete_RifflesAllTiers"
+			],
+			[
+				"Delete",
+				"delete_RifflesAllTiers"
+			],
+			[
+				"tier",
+				"TierR1"
+			],
+			[
+				"target",
+				"targetSTA"
+			],
+			[
+				"remot",
+				"removeUpperLimit"
+			],
+			[
+				"remove",
+				"removeUpperLimit"
+			],
+			[
+				"remov",
+				"removeLowerLimit"
+			],
+			[
+				"dele",
+				"delete_Riffles"
+			],
+			[
+				"rn",
+				"rNext_EndElev"
+			],
+			[
+				"rne",
+				"rNext_EndStation"
+			],
+			[
+				"rN",
+				"rNext"
+			],
+			[
+				"delet",
+				"deleteRiffles"
+			],
+			[
+				"rNExt",
+				"rNext_EndElev"
+			],
+			[
+				"tar",
+				"targetElev"
+			],
+			[
+				"tart",
+				"targetSTA"
+			],
+			[
+				"chec",
+				"check_NextRiffle"
+			],
+			[
+				"r",
+				"rCurrent"
+			],
+			[
+				"near",
+				"near_idx"
+			],
+			[
+				"rif",
+				"riffle_length"
+			],
+			[
+				"Tier",
+				"TierR1"
+			],
+			[
+				"ma",
+				"maxList"
+			],
+			[
+				"El",
+				"elif"
+			],
+			[
+				"Ti",
+				"Tier_3"
+			],
+			[
+				"Tie",
+				"Tier_2"
+			],
+			[
+				"arr",
+				"arrVariablesAll"
+			],
+			[
+				"arrv",
+				"arrVariablesAll"
+			],
+			[
+				"tha",
+				"Thalweg"
+			],
+			[
+				"riff",
+				"riffleDrop"
+			],
+			[
+				"geom",
+				"geometry"
+			],
+			[
+				"slope",
+				"slopeValley"
+			],
+			[
+				"pt1",
+				"pt1_z"
+			],
+			[
+				"slo",
+				"slopeValley"
+			],
+			[
+				"pt",
+				"ptBankRight"
+			],
+			[
+				"horizontal",
+				"HorizontalDistance"
+			],
+			[
+				"thal",
+				"ThalwegHoriz"
+			],
+			[
+				"T",
+				"Thalweg"
+			],
+			[
+				"nor",
+				"normalVector"
+			],
+			[
+				"p",
+				"p_ratio"
+			],
+			[
+				"new_",
+				"new_p_ratio"
+			],
+			[
+				"old",
+				"old_range"
+			],
+			[
+				"array",
+				"array_p_ratio"
+			],
+			[
+				"arra",
+				"array_p_ratio"
+			],
+			[
+				"p_",
+				"p_ratio"
+			],
+			[
+				"slop",
+				"slopeAtPoint"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/R/BIO/SCRATCH/BArvai/Grasshopper/BioRSC/BioRSC.py",
+		"/C/Users/barvai/AppData/Roaming/McNeel/Rhinoceros/5.0/scripts/GitHub/BioRSC/extra/ViewValues.py",
+		"/C/Users/barvai/AppData/Roaming/McNeel/Rhinoceros/5.0/scripts/GitHub/BioRSC/extra/Suitability.py",
+		"/C/Users/barvai/AppData/Roaming/McNeel/Rhinoceros/5.0/scripts/GitHub/BioRSC/extra/RifflePoints.py",
+		"/C/Users/barvai/AppData/Roaming/McNeel/Rhinoceros/5.0/scripts/GitHub/BioRSC/extra/RiffleExtract.py",
+		"/R/BIO/SCRATCH/BArvai/Grasshopper/BioRSC/ViewValues.py",
+		"/C/Users/barvai/AppData/Roaming/McNeel/Rhinoceros/5.0/scripts/RifflePoints.py",
+		"/R/BIO/SCRATCH/BArvai/Grasshopper/BioRSC/Suitability.py",
+		"/R/BIO/SCRATCH/BArvai/Grasshopper/BioRSC/RifflePoints.py",
+		"/C/Users/barvai/Desktop/tython.py",
+		"/C/Users/barvai/Desktop/brython.py"
+	],
+	"find":
+	{
+		"height": 28.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "BioRSC.sublime-project",
+	"replace":
+	{
+		"height": 52.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 195.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
