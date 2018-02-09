@@ -5,16 +5,11 @@ import math
         #https://stevebaer.wordpress.com/2011/06/27/numpy-and-scipy-in-rhinopython/
         #http://www.grasshopper3d.com/forum/topics/scipy-and-numpy
 
-#x = Thalweg2D - 2D representation of Crv
-#y = Division lengths for points2D along centerline
-#z = Right Bank 
-#u = Left Bank
-
 
 class Centerline(object):
     def __init__(self, crvCenterline, meshEX, crvBankRight, crvBankLeft, lenDivision):
-        #****makes a list of each variable. In order, but not attributed to each point. 
-        #****may want to pull everything under point info
+
+        #Centerline information
         self.Thalweg2D = crvCenterline
         self.BankRight2D = crvBankRight
         self.BankLeft2D = crvBankLeft
@@ -29,7 +24,7 @@ class Centerline(object):
             self.points3D.append(rs.ProjectPointToMesh(i, meshEX, (0,0,1))[0])
             #Need to Project Points to Mesh one by one. When projecting all points to mesh, 
             #they slowly diverge in X and Y values from the original 2D points, therefore 
-            #projcting to a different Z value 
+            #projecting to a different Z value. This appears to be slow. 
 
         #Set up Riffles
         self.riffles = []      
@@ -39,10 +34,8 @@ class Centerline(object):
         self.setBankInfo(meshEX)
         
         #get existing conditions values
-        #?????Should we do this after the getIdealRiffleDesign so that we can vary the window
-        #?????based on the ideal riffle length? Answer: No. Ideal Riffle Design Requires Valley Slope.
+        #(,X) X is important and factors into variances alot. Need to not hard code in.
         self.getSlopes(2,5)       
-            #(,X) X is important and factors into variances alot. Need to not hard code in.
         
         self.getIdealRiffleDesign(.5, 10, meshEX)
         self.getBendRatios(5)
@@ -52,7 +45,6 @@ class Centerline(object):
         #can now link this to the design iterator (justin) for riffle width and depth, using bank width as the riffle
         #width and plugging in a flowrate. 
         #*****************************************
-
 
     def createRiffles(self, meshEX):
         for i in range(len(self.points3D)):
@@ -70,7 +62,8 @@ class Centerline(object):
             
             #others
             i.bank_width = horizontal_distance(i.ptBankRight, i.ptBankLeft)
-            #Bank width and elevBankLow are coming out the same for 2-5 in a row??? I believe this is because the nearest bank points are the same for those 2-5 points.
+            #??Bank width and elevBankLow are coming out the same for 2-5 in a row??? I believe this
+            #??is because the nearest bank points are the same for those 2-5 points.
 
             i.BankRightIncision = i.ptBankRight.Z - i.invertChannel.Z 
             i.BankLeftIncision = i.ptBankLeft.Z - i.invertChannel.Z 
@@ -104,37 +97,11 @@ class Centerline(object):
         return
 
     def getIdealRiffleDesign(self, riffle_drop_min, riffle_length_min, meshEX): 
-        ##need an additional variable - that is able to be reset
-
-        # #Setup Variables
-        # cl = self.Thalweg2D
-        # crvBR = self.BankRight2D
-        # crvBL = self.BankLeft2D
-
-        # points = []
-        # interval = 0.2 * self.lenDivision
-
-        # #split curve into 0.1 increments to be sampled
-        # points2D = rs.DivideCurveLength(cl, interval, True, True)
         
-
-
-        # #Project points to mesh creates a different array than Ppoints2D. Not sure how/why, but 
-        # #need to loop through in method below to keep remaining code reading array correctly
-        # for i in points2D:
-        #      #?There has to be a better way to do this
-        #     #ptBR = rs.EvaluateCurve(crvBR, rs.CurveClosestPoint(crvBR, i))
-        #     #ptBL = rs.EvaluateCurve(crvBL, rs.CurveClosestPoint(crvBL, i))
-            
-        #     ptBR = rs.ProjectPointToMesh(rs.EvaluateCurve(crvBR, rs.CurveClosestPoint(crvBR, i)), meshEX, (0,0,1))[0]
-        #     ptBL = rs.ProjectPointToMesh(rs.EvaluateCurve(crvBL, rs.CurveClosestPoint(crvBL, i)), meshEX, (0,0,1))[0]
-        #     elevBankLow = min(ptBR.Z, ptBL.Z)
-        #     points.append(rs.coerce3dpoint((i.X, i.Y, elevBankLow)))
-            
+        #Inital riffle set up info    
         for i in self.riffles:
             i.riffle.pt_start = i.ptBankMin
             i.riffle.width = i.bank_width
-
 
         #Calculate Ideal riffle design for each stream point
         for i in self.riffles:
@@ -144,14 +111,11 @@ class Centerline(object):
             i.riffle.drop = riffle_drop_min         #Initial drop test
             i.riffle.length = riffle_length_min     #Initial length test
 
-            # riffle_drop = riffle_drop_min       #Initial drop test
-            # riffle_length = riffle_length_min   #Initial length test
-
             print("************************")
             print("New Riffle", i.station, len(self.riffles), round(self.end.Z,2))
 
 
-            #loop through sizing scenarios
+            #Iterate through riffles sizes
             while count < 35:
                 
                 #Set initial riffle/pool Values
@@ -161,10 +125,10 @@ class Centerline(object):
                 rDSInvert = i.riffle.pt_start.Z - i.riffle.drop
 
 
-                #Check that rDSInvert is not lower than thalweg2D endpoint
+                #Check that rDSInvert is not lower than centerline endpoint
                 if rDSInvert < self.end.Z:
                     i.use = 0
-                    print(i.station, "Lower than end point")
+                    print(i.station, ' is lower than the stream end point')
                     break   #breaks the "While" Loop
                 
 
@@ -174,13 +138,12 @@ class Centerline(object):
                 print("Riffle Start Point: ", i.station)
                 print("X: ", round(i.ptBankMin.X, 2),"Y: ", round(i.ptBankMin.Y, 2), "Z: ", round(i.ptBankMin.Z, 2))
                 print("Pool Start Point: ", i.pool.station_start, 'pool elevation:', rDSInvert)
-                #print("X: ", i.riffle.pt_start.X, "Y: ", i.riffle.pt_start.Y, "Z: ", i.riffle.pt_start.Z)
 
 
                 #Find Downstream point j where rDSInvert is higher than channel
                 #this means that the interval has to be low enough to catch an approximate elevation
                 #where the pool will meet the channel
-                #?Can this be changed to automatically find the point at that elevation beyond a certain length?
+                #????Can this be changed to automatically find the point at that elevation beyond a certain length?
                 for j in self.riffles[int(i.riffle.station_start/self.lenDivision) + 1:len(self.riffles)]:
                     
                     print("1-----", j, round(rDSInvert, 2), round(j.riffle.pt_start.Z, 2))
@@ -190,15 +153,14 @@ class Centerline(object):
                         i.pool.pt_end = j.riffle.pt_start
         
                         print ("2-----", j, i.station, i.pool.station_start, i.pool.length, round(j.riffle.pt_start.Z, 2))
-                        break   #breaks the "for" loop
-                    #print("iteration", j, pool_length, i.station, i.pool.station_start, points[j].Z)
-                        
+                        break                         
 
-                #Changes 
+                #--------------Iterate through riffle sizes ---------------------------------------------
+
+
                 if i.pool.length >= 1.5 * i.riffle.length:
+                    #Current sizes meet criteria. Set remaining riffle/pool info
                     i.geometry = "Riffle"
-                    
-                    #set remaining riffle/pool data
                     i.riffle.slope = i.riffle.drop / i.riffle.length
                     i.riffle.station_end = i.station + i.riffle.length
                     i.pool.index = int(i.riffle.station_end/self.lenDivision)
@@ -209,33 +171,28 @@ class Centerline(object):
                     i.pool.tangent_end = pEnd.tangent
                     i.riffle.pt_end = rs.coerce3dpoint((rEnd.riffle.pt_start.X, rEnd.riffle.pt_start.Y, rDSInvert))
                     i.pool.pt_start = i.riffle.pt_end  
-
-
-                    #Break
                     break
 
                 else:
+                    #Iterate through riffle drop first
                     if i.riffle.drop < 2:
                         i.riffle.drop += 0.25
                         count +=1
+                    #then iterate length and reset the riffle drop
                     elif i.riffle.length < 30:
                         i.riffle.drop = riffle_drop_min
                         i.riffle.length += 5
                         count +=1
+                    #maxes out on riffle iterations, need to add cascade values. 
                     else:
                         i.geometry = "Neither"
                         #print(i.station, "geometry=", i.geometry)
                         break
-                    #!!!NEED TO ADD IN CASCADE
-            #print("here", i.station, i.geometry, i.riffle.length, pool_length)
-
-            printriffledata(i)
+                    #????NEED TO ADD IN CASCADE
         return
 
-
-
     def getCurvature(self, t):
-        for i in range(1 , len(self.riffles)):#-t): ?Don't think we need to subtract last "t" as with getBendRatios
+        for i in range(1 , len(self.riffles)):
             print(self.riffles[i].station, self.riffles[i].parameter, self.riffles[i].curvature)
             print(self.Thalweg2D)
             self.riffles[i].curvature = rs.CurveCurvature(self.Thalweg2D, self.riffles[i].parameter)[3]
@@ -263,7 +220,7 @@ class Centerline(object):
             self.riffles[i].bend_ratio = p_diff
             array_bend_ratio.append(p_diff)
 
-        #Normalize
+        #Normalize - ?? Need to update normalization. Should we have this be a separate function?
         old_min = min(array_bend_ratio)
         old_range = max(array_bend_ratio) - old_min
         
@@ -313,7 +270,7 @@ class StreamPoint(object):
 
         #Use
         self.suitability = 0
-        self.use = None                    #1 = Riffle, 0 = Don't Use, -1 = Pool (pool points2D not usedd for now)
+        self.use = None                    #2 = Gap in riffle/pool, 1 = Riffle, 0 = Don't Use, -1 = Pool (pool points2D not usedd for now)
         
         #Proposed Riffle Design Information
         self.geometry = None
@@ -322,12 +279,6 @@ class StreamPoint(object):
         self.riffle.station_start = self.station
 
         self.pool = PoolPoint()
-        
-        #project Thalweg2D to Horizontal Plane
-        #Do we need this anymore?????
-        crvCenterlineHoriz = rs.CopyObject(crvCenterline)
-        rs.ScaleObject(crvCenterlineHoriz, (0,0,0), (1,1,0))
-        self.parameterHorizontal = rs.CurveClosestPoint(crvCenterlineHoriz, point)
  
 class RifflePoint(object):
     
