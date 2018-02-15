@@ -16,6 +16,9 @@ T_RE = []
 T_PS = []
 T_PE = []
 widths = []
+RB = []
+LB = []
+invert = []
 
 for i in crvRifflePoints.riffles:
    if i.use == 1:
@@ -34,6 +37,9 @@ for i in crvRifflePoints.riffles:
 
 for i in crvRifflePoints.riffles:
     pAll.append(i.ptBankMin)
+    RB.append(i.ptBankRight)
+    LB.append(i.ptBankLeft)
+    invert.append(i.invertChannel)
 
 t = paramaters
 riffle_length = lengths
@@ -48,3 +54,6 @@ pts_rEnd = pRE
 pts_pStart = pPS
 pts_pEnd = pPE
 allpts = pAll
+a = RB
+b = LB
+c = invert

@@ -146,10 +146,10 @@ class Centerline(object):
                 #????Can this be changed to automatically find the point at that elevation beyond a certain length?
                 for j in self.riffles[int(i.riffle.station_start/self.lenDivision) + 1:len(self.riffles)]:
                     
-                    print("1-----", j, round(rDSInvert, 2), round(j.riffle.pt_start.Z, 2))
+                    print("1-----", j.index, round(rDSInvert, 2), round(j.riffle.pt_start.Z, 2))
                     if j.riffle.pt_start.Z <= rDSInvert:
                         i.pool.station_end = j.riffle.station_start
-                        i.pool.length = j.riffle.station_start - i.pool.station_start
+                        i.pool.length = i.pool.station_end - i.pool.station_start
                         i.pool.pt_end = j.riffle.pt_start
         
                         print ("2-----", j, i.station, i.pool.station_start, i.pool.length, round(j.riffle.pt_start.Z, 2))
@@ -192,19 +192,27 @@ class Centerline(object):
         return
 
     def getCurvature(self, t):
-        for i in range(1 , len(self.riffles)):
-            print(self.riffles[i].station, self.riffles[i].parameter, self.riffles[i].curvature)
-            print(self.Thalweg2D)
-            self.riffles[i].curvature = rs.CurveCurvature(self.Thalweg2D, self.riffles[i].parameter)[3]
-            print(self.riffles[i].curvature)
+        
+        curves = []
 
+        for i in range(0 , len(self.riffles)):
+            print(self.riffles[i].station, self.riffles[i].parameter, self.riffles[i].curvature)
+            curves.append(rs.CurveCurvature(self.Thalweg2D, self.riffles[i].parameter)[3])
+            print(curves[i])
+
+
+        #This is going to be averaging as it goes through
         for i in range(1 , len(self.riffles)-10):
             curvature  = 0
             count = 0   
             for j in range(i, i + 10):
-                curvature += self.riffles[j].curvature
+                curvature += curves[i]
                 count += 1
             self.riffles[i].curvature = curvature / count
+
+        for i in range(len(self.riffles)-10, len(self.riffles)):
+            self.riffles[i].curvature = curves[i]
+
         return
         
     def getBendRatios(self, t):
