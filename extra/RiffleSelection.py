@@ -246,6 +246,21 @@ def nearestList(l, v, value):
 
     return near_idx, near_val, numi
 
+def getPoolDepths(cl):
+
+    for i in cl.riffles:
+        if i.use == 1:
+            i.pool.depth = (i.pool.length) #-5)/4
+            print(i.index, i.pool.length, ',', i.pool.depth)
+            maxDepth = i.riffle.pt_end.Z - i.invertChannel.Z
+                #???Invert Channel is not completely correct as it is at the riffle start point
+            if maxDepth < 2:
+                maxDepth = 2
+
+            if i.pool.depth > maxDepth:
+                i.pool.depth = maxDepth
+    return
+
 def print_RiffleInfo(l, i):
     print("----------")
     print("index = ", i)
@@ -294,6 +309,14 @@ print(time_step1-time_start)
 #___________________________________________________________________________
 print('STEP 2---------------')
 resolve_Gaps(crvRifflePoints)
+
+
+#___________________________________________________________________________
+#STEP 3:  Finalize Riffle/Pools
+#Place Riffles
+#___________________________________________________________________________
+print('STEP 3---------------')
+getPoolDepths(crvRifflePoints)
 
 
 

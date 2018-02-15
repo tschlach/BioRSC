@@ -25,6 +25,14 @@ class Centerline(object):
             #Need to Project Points to Mesh one by one. When projecting all points to mesh, 
             #they slowly diverge in X and Y values from the original 2D points, therefore 
             #projecting to a different Z value. This appears to be slow. 
+        
+        #???Check for the "hiccups in projection. They appear to only be in single points and can be smoothed. Always appear to be lower than others nearby. Only checks for lower currently. Ideally, we don't have to do this.
+        for i in range(1, len(self.points3D)-1):
+            zR1 = self.points3D[i-1].Z
+            zR2 = self.points3D[i+1].Z
+            if self.points3D[i].Z < zR1 and self.points3D[i].Z < zR2:
+                self.points3D[i].Z = (zR1+zR2)/2
+
 
         #Set up Riffles
         self.riffles = []      
@@ -58,6 +66,24 @@ class Centerline(object):
             #Bank Points
             i.ptBankRight = getPointFromMesh_Bank(self.Thalweg2D, self.BankRight2D, i.station, meshEX)
             i.ptBankLeft = getPointFromMesh_Bank(self.Thalweg2D, self.BankLeft2D, i.station, meshEX)
+        
+        #???Check for the "hiccups in projection. They appear to only be in single points and can be smoothed. Always appear to be lower than others nearby. Only checks for lower currently. Ideally, we don't have to do this.
+        for i in range(1, len(self.riffles)-1):
+            #Right Bank
+            zR1 = self.riffles[i-1].ptBankRight.Z
+            zR2 = self.riffles[i+1].ptBankRight.Z
+            if self.riffles[i].ptBankRight.Z < zR1 and self.riffles[i].ptBankRight.Z < zR2:
+                self.riffles[i].ptBankRight.Z = (zR1+zR2)/2
+
+            #Left Bank
+            zR1 = self.riffles[i-1].ptBankLeft.Z
+            zR2 = self.riffles[i+1].ptBankLeft.Z
+            if self.riffles[i].ptBankLeft.Z < zR1 and self.riffles[i].ptBankLeft.Z < zR2:
+                self.riffles[i].ptBankLeft.Z = (zR1+zR2)/2
+
+        for i in self.riffles:
+
+            #Bank Points
             i.elevBankLow = min(i.ptBankLeft.Z, i.ptBankRight.Z)
             
             #others
@@ -68,7 +94,7 @@ class Centerline(object):
             i.BankRightIncision = i.ptBankRight.Z - i.invertChannel.Z 
             i.BankLeftIncision = i.ptBankLeft.Z - i.invertChannel.Z 
             i.ptBankMin = rs.coerce3dpoint((i.invertChannel.X, i.invertChannel.Y, i.elevBankLow))
-        
+
         return
 
     def getSlopes(self, winChannel, winValley):
@@ -101,7 +127,7 @@ class Centerline(object):
         #Inital riffle set up info    
         for i in self.riffles:
             i.riffle.pt_start = i.ptBankMin
-            i.riffle.width = i.bank_width
+            i.riffle.width = 10 #i.bank_width
 
         #Calculate Ideal riffle design for each stream point
         for i in self.riffles:
@@ -314,6 +340,7 @@ class PoolPoint(object):
         self.slope = None
         self.drop = None
         self.width = None     #Calc based on Bank Width
+        self.depth = None
         self.station_start = None
         self.station_end = None
         self.pt_start = None

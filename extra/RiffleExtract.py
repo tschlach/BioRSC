@@ -19,6 +19,7 @@ widths = []
 RB = []
 LB = []
 invert = []
+depths = []
 
 for i in crvRifflePoints.riffles:
    if i.use == 1:
@@ -34,6 +35,7 @@ for i in crvRifflePoints.riffles:
    	   T_PS.append(i.pool.tangent_start)
    	   T_PE.append(i.pool.tangent_end)	
 	   widths.append(i.riffle.width)
+	   depths.append(i.pool.depth)
 
 for i in crvRifflePoints.riffles:
     pAll.append(i.ptBankMin)
@@ -54,6 +56,7 @@ pts_rEnd = pRE
 pts_pStart = pPS
 pts_pEnd = pPE
 allpts = pAll
+PoolDepth = depths
 a = RB
 b = LB
 c = invert
