@@ -47,7 +47,7 @@ for i in crvRifflePoints.riffles:
 
 
 #___________________________________________________________________________
-#STEP 1: CALCULATE STREAM POINT SUITABILITIES
+#STEP 2: CALCULATE STREAM POINT SUITABILITIES
 #Adjust the riffles.suitability values for each stream points
 #___________________________________________________________________________
 print('STEP 1---------------')

@@ -1,6 +1,8 @@
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
 import math 
+import time
+
 #import numpy as np     #Doesnt' work for IronPython. Need to download stuff... Look at this link: 
         #https://stevebaer.wordpress.com/2011/06/27/numpy-and-scipy-in-rhinopython/
         #http://www.grasshopper3d.com/forum/topics/scipy-and-numpy
@@ -31,22 +33,47 @@ class Centerline(object):
             #they slowly diverge in X and Y values from the original 2D points, therefore 
             #projcting to a different Z value 
 
+        time_step1 = time.time()
+
         #Set up Riffles
         self.riffles = []      
         self.createRiffles(meshEX)
         
+        time_step2 = time.time()
+
         #Get Bank Points
         self.setBankInfo(meshEX)
         
+        time_step3 = time.time()
+
         #get existing conditions values
         #?????Should we do this after the getIdealRiffleDesign so that we can vary the window
         #?????based on the ideal riffle length? Answer: No. Ideal Riffle Design Requires Valley Slope.
         self.getSlopes(2,5)       
             #(,X) X is important and factors into variances alot. Need to not hard code in.
         
+        time_step4 = time.time()
+
         self.getIdealRiffleDesign(.5, 10, meshEX)
+        
+        time_step5 = time.time()
+
         self.getBendRatios(5)
+        
+        time_step6 = time.time()
+
         self.getCurvature(5)
+        
+        time_step7 = time.time()
+
+        print('Step 1 Comp Time:', time_step1-time_start)
+        print('Step 2 Comp Time:', time_step2-time_start)
+        print('Step 3 Comp Time:', time_step3-time_start)
+        print('Step 4 Comp Time:', time_step4-time_start)
+        print('Step 5 Comp Time:', time_step5-time_start)
+        print('Step 6 Comp Time:', time_step6-time_start)
+        print('Step 7 Comp Time:', time_step7-time_start)
+
 
         #*****************************************
         #can now link this to the design iterator (justin) for riffle width and depth, using bank width as the riffle
@@ -423,8 +450,13 @@ def printriffledata(riffle):
     print('pool pt end:', riffle.pool.pt_end)
     print('pool pt end z:', riffle.pool.pt_end.Z)
 
+
+time_start = time.time()
+print('Comp Time:', time_start-time_start)
+
 #x Channel is set as curve in centerline class
 crvRifflePoints = Centerline(crvThalweg2D, Mesh, crvRightBank, crvLeftBank, interval)
 
 for i in crvRifflePoints.riffles:
     print(i.station, i.geometry)  
+
