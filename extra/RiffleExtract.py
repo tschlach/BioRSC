@@ -16,6 +16,10 @@ T_RE = []
 T_PS = []
 T_PE = []
 widths = []
+RB = []
+LB = []
+invert = []
+depths = []
 
 for i in crvRifflePoints.riffles:
    if i.use == 1:
@@ -31,9 +35,13 @@ for i in crvRifflePoints.riffles:
    	   T_PS.append(i.pool.tangent_start)
    	   T_PE.append(i.pool.tangent_end)	
 	   widths.append(i.riffle.width)
+	   depths.append(i.pool.depth)
 
 for i in crvRifflePoints.riffles:
     pAll.append(i.ptBankMin)
+    RB.append(i.ptBankRight)
+    LB.append(i.ptBankLeft)
+    invert.append(i.invertChannel)
 
 t = paramaters
 riffle_length = lengths
@@ -48,3 +56,7 @@ pts_rEnd = pRE
 pts_pStart = pPS
 pts_pEnd = pPE
 allpts = pAll
+PoolDepth = depths
+a = RB
+b = LB
+c = invert
